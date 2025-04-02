@@ -1,13 +1,15 @@
 import React from "react";
 import { Pages } from "../constants/pages";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Menu = () => {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) {
+    return null;
+  }
   return (
     <>
-      <li>
-        <Link to={Pages.HOME}>HOME</Link>
-      </li>
       <li>
         <Link to={Pages.USERS}>Users</Link>
       </li>
@@ -25,6 +27,7 @@ const Menu = () => {
 };
 
 export const Navbar: React.FC = () => {
+  const { isAuthenticated, logout, userInfo } = useAuth();
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
@@ -37,7 +40,6 @@ export const Navbar: React.FC = () => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -53,7 +55,9 @@ export const Navbar: React.FC = () => {
             <Menu />
           </ul>
         </div>
-        <a className="btn btn-ghost text-xl">daisyUI</a>
+        <Link to={Pages.HOME} className="btn btn-ghost text-xl">
+          daisyUI
+        </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
@@ -61,7 +65,28 @@ export const Navbar: React.FC = () => {
         </ul>
       </div>
       <div className="navbar-end">
-        <a className="btn">Button</a>
+        {isAuthenticated ? (
+          <div className="flex items-center gap-3">
+            <div className="avatar">
+              <div className="mask mask-hexagon w-10 bg-green-100 text-center">
+                {userInfo?.avatarUrl ? (
+                  <img src={userInfo?.avatarUrl} />
+                ) : (
+                  <span className="text-3xl">
+                    {(userInfo?.name ?? userInfo?.utorid)?.charAt(0)}
+                  </span>
+                )}
+              </div>
+            </div>
+            <button className="btn" onClick={logout}>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <Link to={Pages.LOGIN} className="btn">
+            Login
+          </Link>
+        )}
       </div>
     </div>
   );

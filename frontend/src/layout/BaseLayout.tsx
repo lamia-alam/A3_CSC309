@@ -1,13 +1,14 @@
-import React from 'react'
-import { Navbar } from '../components/Navbar'
-import { Outlet } from 'react-router-dom'
+import React from "react";
+import { Navbar } from "../components/Navbar";
+import { Outlet } from "react-router-dom";
 
-export const BaseLayout:React.FC = () => {
+export const BaseLayout: React.FC = () => {
   return (
     <>
-    <Navbar />
-    <Outlet /> 
+      <Navbar />
+      <div className="p-5">
+        <Outlet />
+      </div>
     </>
-
-  )
-}
+  );
+};

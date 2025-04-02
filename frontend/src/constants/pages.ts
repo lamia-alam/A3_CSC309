@@ -53,4 +53,5 @@ export enum Pages {
   // A page that allows awarding points to a single guest, or to all guests who have RSVPed
 
   HOME = "/",
+  LOGIN = "/login",
 }
