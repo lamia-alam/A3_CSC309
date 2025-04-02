@@ -1,0 +1,827 @@
+Server running on port 10968
+POST : /users - allowed roles [ 'cashier', 'manager', 'superuser' ]  - user role regular
+GET : /users - allowed roles [ 'manager', 'superuser' ]  - user role regular
+GET : /users/2 - allowed roles [ 'cashier', 'manager', 'superuser' ]  - user role regular
+POST : /events - allowed roles [ 'manager', 'superuser' ]  - user role cashier
+🚀 ~ authentication ~ error: JsonWebTokenError: jwt malformed
+    at module.exports [as verify] (/data/markus/workspace/workers/autotst6/node_modules/jsonwebtoken/verify.js:70:17)
+    at verifyToken (/data/markus/workspace/workers/autotst6/utils/jwt.js:17:16)
+    at authentication (/data/markus/workspace/workers/autotst6/middleware/auth.js:17:21)
+    at Layer.handle [as handle_request] (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/layer.js:95:5)
+    at next (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/layer.js:95:5)
+    at /data/markus/workspace/workers/autotst6/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/index.js:346:12)
+    at next (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/index.js:280:10) path:  /events method:  POST
+getEvents called, query: { published: 'false' }
+🚀 ~ getEvents ~ where: { published: false }
+🚀 ~ getEvents ~ totalEvents: count 11
+🚀 ~ getEvents ~ totalEvents: [
+  {
+    id: 2,
+    name: 'Event 01',
+    description: 'Creating event 01',
+    startTime: 2025-03-20T23:55:38.261Z,
+    endTime: 2025-03-21T23:55:38.261Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.265Z,
+    updatedAt: 2025-03-20T23:55:28.265Z,
+    EventGuests: []
+  },
+  {
+    id: 3,
+    name: 'Event 02',
+    description: 'Creating event 02',
+    startTime: 2025-03-21T23:55:38.269Z,
+    endTime: 2025-03-22T23:55:38.269Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.273Z,
+    updatedAt: 2025-03-20T23:55:28.273Z,
+    EventGuests: []
+  },
+  {
+    id: 4,
+    name: 'Event 03',
+    description: 'Creating event 03',
+    startTime: 2025-03-20T23:55:30.536Z,
+    endTime: 2025-03-23T23:55:38.277Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.281Z,
+    updatedAt: 2025-03-20T23:55:28.542Z,
+    EventGuests: []
+  },
+  {
+    id: 5,
+    name: 'Event 04',
+    description: 'Creating event 04',
+    startTime: 2025-03-23T23:55:38.284Z,
+    endTime: 2025-03-24T23:55:38.284Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.288Z,
+    updatedAt: 2025-03-20T23:55:28.288Z,
+    EventGuests: []
+  },
+  {
+    id: 6,
+    name: 'Event 05',
+    description: 'Creating event 05',
+    startTime: 2025-03-24T23:55:38.292Z,
+    endTime: 2025-03-25T23:55:38.292Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.296Z,
+    updatedAt: 2025-03-20T23:55:28.296Z,
+    EventGuests: []
+  },
+  {
+    id: 7,
+    name: 'Event 06',
+    description: 'Creating event 06',
+    startTime: 2025-03-25T23:55:38.300Z,
+    endTime: 2025-03-26T23:55:38.300Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.304Z,
+    updatedAt: 2025-03-20T23:55:28.304Z,
+    EventGuests: []
+  },
+  {
+    id: 8,
+    name: 'Event 07',
+    description: 'Creating event 07',
+    startTime: 2025-03-26T23:55:38.308Z,
+    endTime: 2025-03-27T23:55:38.308Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.313Z,
+    updatedAt: 2025-03-20T23:55:28.313Z,
+    EventGuests: []
+  },
+  {
+    id: 9,
+    name: 'Event 08',
+    description: 'Creating event 08',
+    startTime: 2025-03-27T23:55:38.317Z,
+    endTime: 2025-03-28T23:55:38.317Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.321Z,
+    updatedAt: 2025-03-20T23:55:28.321Z,
+    EventGuests: []
+  },
+  {
+    id: 10,
+    name: 'Event 09',
+    description: 'Creating event 09',
+    startTime: 2025-03-28T23:55:38.325Z,
+    endTime: 2025-03-29T23:55:38.325Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.330Z,
+    updatedAt: 2025-03-20T23:55:28.330Z,
+    EventGuests: []
+  },
+  {
+    id: 11,
+    name: 'Event 10',
+    description: 'Creating event 10',
+    startTime: 2025-03-29T23:55:38.333Z,
+    endTime: 2025-03-30T23:55:38.333Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.337Z,
+    updatedAt: 2025-03-20T23:55:28.337Z,
+    EventGuests: []
+  },
+  {
+    id: 12,
+    name: 'Event 11',
+    description: 'Creating event 11',
+    startTime: 2025-03-30T23:55:38.342Z,
+    endTime: 2025-03-31T23:55:38.342Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.346Z,
+    updatedAt: 2025-03-20T23:55:28.346Z,
+    EventGuests: []
+  }
+]
+🚀 ~ getEvents ~ eventCount: 11
+addEventGuest called params: { eventId: '1' } body: { utorid: 'mock0000' }
+addEventGuest 400 Guest is already an Organizer. Remove them from organizer list and try again. Request body: { utorid: 'mock0000' }
+getEvents called, query: { limit: '-1' }
+getEvents 400 Invalid page or limit. Request query: { limit: '-1' }
+getEvents called, query: { page: '-1' }
+getEvents 400 Invalid page or limit. Request query: { page: '-1' }
+getEvents called, query: {}
+🚀 ~ getEvents ~ where: { published: true }
+🚀 ~ getEvents ~ totalEvents: count 10
+🚀 ~ getEvents ~ totalEvents: [
+  {
+    id: 1,
+    name: 'Event 0',
+    description: 'Creating event 0',
+    startTime: 2025-03-20T23:55:31.255Z,
+    endTime: 2025-03-20T23:55:32.255Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: null,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.258Z,
+    updatedAt: 2025-03-20T23:55:28.532Z,
+    EventGuests: []
+  },
+  {
+    id: 3,
+    name: 'Event 02',
+    description: 'Creating event 02',
+    startTime: 2025-03-21T23:55:38.269Z,
+    endTime: 2025-03-22T23:55:38.269Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.273Z,
+    updatedAt: 2025-03-20T23:55:28.568Z,
+    EventGuests: []
+  },
+  {
+    id: 4,
+    name: 'Event 03',
+    description: 'Creating event 03',
+    startTime: 2025-03-20T23:55:30.536Z,
+    endTime: 2025-03-23T23:55:38.277Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.281Z,
+    updatedAt: 2025-03-20T23:55:28.579Z,
+    EventGuests: []
+  },
+  {
+    id: 5,
+    name: 'Event 04',
+    description: 'Creating event 04',
+    startTime: 2025-03-23T23:55:38.284Z,
+    endTime: 2025-03-24T23:55:38.284Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.288Z,
+    updatedAt: 2025-03-20T23:55:28.589Z,
+    EventGuests: []
+  },
+  {
+    id: 6,
+    name: 'Event 05',
+    description: 'Creating event 05',
+    startTime: 2025-03-24T23:55:38.292Z,
+    endTime: 2025-03-25T23:55:38.292Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.296Z,
+    updatedAt: 2025-03-20T23:55:28.603Z,
+    EventGuests: []
+  },
+  {
+    id: 7,
+    name: 'Event 06',
+    description: 'Creating event 06',
+    startTime: 2025-03-25T23:55:38.300Z,
+    endTime: 2025-03-26T23:55:38.300Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.304Z,
+    updatedAt: 2025-03-20T23:55:28.616Z,
+    EventGuests: []
+  },
+  {
+    id: 8,
+    name: 'Event 07',
+    description: 'Creating event 07',
+    startTime: 2025-03-26T23:55:38.308Z,
+    endTime: 2025-03-27T23:55:38.308Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.313Z,
+    updatedAt: 2025-03-20T23:55:28.625Z,
+    EventGuests: []
+  },
+  {
+    id: 9,
+    name: 'Event 08',
+    description: 'Creating event 08',
+    startTime: 2025-03-27T23:55:38.317Z,
+    endTime: 2025-03-28T23:55:38.317Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.321Z,
+    updatedAt: 2025-03-20T23:55:28.635Z,
+    EventGuests: []
+  },
+  {
+    id: 10,
+    name: 'Event 09',
+    description: 'Creating event 09',
+    startTime: 2025-03-28T23:55:38.325Z,
+    endTime: 2025-03-29T23:55:38.325Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.330Z,
+    updatedAt: 2025-03-20T23:55:28.647Z,
+    EventGuests: []
+  },
+  {
+    id: 11,
+    name: 'Event 10',
+    description: 'Creating event 10',
+    startTime: 2025-03-29T23:55:38.333Z,
+    endTime: 2025-03-30T23:55:38.333Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.337Z,
+    updatedAt: 2025-03-20T23:55:28.657Z,
+    EventGuests: []
+  }
+]
+🚀 ~ getEvents ~ eventCount: 10
+addEventGuest called params: { eventId: '1' } body: { utorid: 'mock0001' }
+addEventGuest called params: { eventId: '1' } body: { utorid: 'mock0002' }
+addEventGuest called params: { eventId: '1' } body: { utorid: 'mock0003' }
+addEventGuest called params: { eventId: '1' } body: { utorid: 'mock0004' }
+DELETE : /events/1/organizers/3 - allowed roles [ 'manager', 'superuser' ]  - user role regular
+removeEventOrganizer called
+addEventGuest called params: { eventId: '1' } body: { utorid: 'mock0000' }
+addEventGuest 410 Event has already ended. Request params: { eventId: '1' }
+deleteEvent called
+deleteEvent 400 Cannot delete a published event. Request params: { eventId: '11' }
+deleteEvent called
+addMeToEventGuest called
+addMeToEventGuest 410 Event has already ended. Request params: { eventId: '1' }
+addMeToEventGuest called
+getEventById called
+removeMeFromEventGuest called
+removeMeFromEventGuest 410 Event has already ended. Request params: { eventId: '1' }
+removeMeFromEventGuest called
+getEventById called
+addEventGuest called params: { eventId: '4' } body: { utorid: 'mock0001' }
+addEventGuest called params: { eventId: '4' } body: { utorid: 'mock0002' }
+addEventGuest called params: { eventId: '4' } body: { utorid: 'mock0003' }
+addEventGuest called params: { eventId: '4' } body: { utorid: 'mock0004' }
+addEventGuest called params: { eventId: '4' } body: { utorid: 'mock0005' }
+addEventGuest called params: { eventId: '4' } body: { utorid: 'mock0010' }
+POST : /events/4/transactions - allowed roles [ 'manager', 'superuser', 'EventOrganizer' ]  - user {
+  id: 5,
+  utorid: 'mock0002',
+  role: 'regular',
+  verified: true,
+  iat: 1742514933,
+  exp: 1742518533
+}
+createEventTransaction called
+createEventTransaction 400 The user is not a guest of the event. Request body: { type: 'event', utorid: 'mock0010', amount: 20 }
+createEventTransaction called
+createEventTransaction 400 Amount must be a positive integer. Request body: { type: 'event', utorid: 'mock0003', amount: -100 }
+createEventTransaction called
+createEventTransaction 400 The event does not have enough points to award. Request body: { type: 'event', utorid: 'mock0003', amount: 1000 }
+createEventTransaction called
+createEventTransaction called
+getEvents called, query: { showFull: 'true' }
+🚀 ~ getEvents ~ where: {}
+🚀 ~ getEvents ~ totalEvents: count 11
+🚀 ~ getEvents ~ totalEvents: [
+  {
+    id: 1,
+    name: 'Event 0',
+    description: 'Creating event 0',
+    startTime: 2025-03-20T23:55:31.255Z,
+    endTime: 2025-03-20T23:55:32.255Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: null,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.258Z,
+    updatedAt: 2025-03-20T23:55:28.532Z,
+    EventGuests: [ [Object], [Object], [Object], [Object] ]
+  },
+  {
+    id: 2,
+    name: 'Event 01',
+    description: 'Creating event 01',
+    startTime: 2025-03-20T23:55:38.261Z,
+    endTime: 2025-03-21T23:55:38.261Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: false,
+    createdAt: 2025-03-20T23:55:28.265Z,
+    updatedAt: 2025-03-20T23:55:28.265Z,
+    EventGuests: []
+  },
+  {
+    id: 3,
+    name: 'Event 02',
+    description: 'Creating event 02',
+    startTime: 2025-03-21T23:55:38.269Z,
+    endTime: 2025-03-22T23:55:38.269Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.273Z,
+    updatedAt: 2025-03-20T23:55:28.568Z,
+    EventGuests: []
+  },
+  {
+    id: 4,
+    name: 'Event 03',
+    description: 'Creating event 03',
+    startTime: 2025-03-20T23:55:30.536Z,
+    endTime: 2025-03-23T23:55:38.277Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 45,
+    pointsRemain: 15,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.281Z,
+    updatedAt: 2025-03-20T23:55:34.295Z,
+    EventGuests: [ [Object], [Object], [Object], [Object], [Object] ]
+  },
+  {
+    id: 5,
+    name: 'Event 04',
+    description: 'Creating event 04',
+    startTime: 2025-03-23T23:55:38.284Z,
+    endTime: 2025-03-24T23:55:38.284Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.288Z,
+    updatedAt: 2025-03-20T23:55:28.589Z,
+    EventGuests: []
+  },
+  {
+    id: 6,
+    name: 'Event 05',
+    description: 'Creating event 05',
+    startTime: 2025-03-24T23:55:38.292Z,
+    endTime: 2025-03-25T23:55:38.292Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.296Z,
+    updatedAt: 2025-03-20T23:55:28.603Z,
+    EventGuests: []
+  },
+  {
+    id: 7,
+    name: 'Event 06',
+    description: 'Creating event 06',
+    startTime: 2025-03-25T23:55:38.300Z,
+    endTime: 2025-03-26T23:55:38.300Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.304Z,
+    updatedAt: 2025-03-20T23:55:28.616Z,
+    EventGuests: []
+  },
+  {
+    id: 8,
+    name: 'Event 07',
+    description: 'Creating event 07',
+    startTime: 2025-03-26T23:55:38.308Z,
+    endTime: 2025-03-27T23:55:38.308Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.313Z,
+    updatedAt: 2025-03-20T23:55:28.625Z,
+    EventGuests: []
+  },
+  {
+    id: 9,
+    name: 'Event 08',
+    description: 'Creating event 08',
+    startTime: 2025-03-27T23:55:38.317Z,
+    endTime: 2025-03-28T23:55:38.317Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.321Z,
+    updatedAt: 2025-03-20T23:55:28.635Z,
+    EventGuests: []
+  },
+  {
+    id: 10,
+    name: 'Event 09',
+    description: 'Creating event 09',
+    startTime: 2025-03-28T23:55:38.325Z,
+    endTime: 2025-03-29T23:55:38.325Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.330Z,
+    updatedAt: 2025-03-20T23:55:28.647Z,
+    EventGuests: []
+  },
+  {
+    id: 11,
+    name: 'Event 10',
+    description: 'Creating event 10',
+    startTime: 2025-03-29T23:55:38.333Z,
+    endTime: 2025-03-30T23:55:38.333Z,
+    location: 'Bahen Centre',
+    pointsAwarded: 0,
+    pointsRemain: 100,
+    capacity: 5,
+    published: true,
+    createdAt: 2025-03-20T23:55:28.337Z,
+    updatedAt: 2025-03-20T23:55:28.657Z,
+    EventGuests: []
+  }
+]
+🚀 ~ getEvents ~ eventCount: 11
+getEventById called
+getEventById 404 Event not found. Request params: { eventId: '123' }
+getEventById called
+getEventById 404 Event not found. Request params: { eventId: '12' }
+getEventById called
+getEventById called
+user total points  85 after this transaction added 80
+POST : /transactions - allowed roles [ 'cashier', 'manager', 'superuser' ]  - user role regular
+POST : /transactions - allowed roles [ 'cashier', 'manager', 'superuser' ]  - user role regular
+PATCH : /transactions/7/suspicious - allowed roles [ 'manager', 'superuser' ]  - user role regular
+PATCH : /transactions/12/processed - allowed roles [ 'cashier', 'manager', 'superuser' ]  - user role regular
+GET : /transactions - allowed roles [ 'manager', 'superuser' ]  - user role regular
+GET : /transactions/7 - allowed roles [ 'manager', 'superuser' ]  - user role regular
+POST : /promotions - allowed roles [ 'manager', 'superuser' ]  - user role cashier
+🚀 ~ authentication ~ error: JsonWebTokenError: jwt malformed
+    at module.exports [as verify] (/data/markus/workspace/workers/autotst6/node_modules/jsonwebtoken/verify.js:70:17)
+    at verifyToken (/data/markus/workspace/workers/autotst6/utils/jwt.js:17:16)
+    at authentication (/data/markus/workspace/workers/autotst6/middleware/auth.js:17:21)
+    at Layer.handle [as handle_request] (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/layer.js:95:5)
+    at next (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/layer.js:95:5)
+    at /data/markus/workspace/workers/autotst6/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/index.js:346:12)
+    at next (/data/markus/workspace/workers/autotst6/node_modules/express/lib/router/index.js:280:10) path:  /promotions method:  POST
+createPromotion called, req.body: {}
+createPromotion 400 Missing required fields {}
+createPromotion called, req.body: {
+  name: 'Invalid Times',
+  description: 'Testing end_time < start_time',
+  type: 'one-time',
+  startTime: '2025-03-20T23:55:34.800257+00:00',
+  endTime: '2025-03-19T23:55:34.800257+00:00',
+  minSpending: null,
+  rate: null,
+  points: null
+}
+createPromotion 400 Start time must be before end time {
+  name: 'Invalid Times',
+  description: 'Testing end_time < start_time',
+  type: 'one-time',
+  startTime: '2025-03-20T23:55:34.800257+00:00',
+  endTime: '2025-03-19T23:55:34.800257+00:00',
+  minSpending: null,
+  rate: null,
+  points: null
+}
+createPromotion called, req.body: {
+  name: 'Negative Min Spending',
+  description: 'Testing negative minSpending',
+  type: 'automatic',
+  startTime: '2025-03-22T23:55:34.803894+00:00',
+  endTime: '2025-03-23T23:55:34.803894+00:00',
+  minSpending: -3.14,
+  rate: null,
+  points: null
+}
+createPromotion 400 Invalid min spending {
+  name: 'Negative Min Spending',
+  description: 'Testing negative minSpending',
+  type: 'automatic',
+  startTime: '2025-03-22T23:55:34.803894+00:00',
+  endTime: '2025-03-23T23:55:34.803894+00:00',
+  minSpending: -3.14,
+  rate: null,
+  points: null
+}
+createPromotion called, req.body: {
+  name: 'Negative Rate',
+  description: 'Testing negative rate',
+  type: 'automatic',
+  startTime: '2025-03-22T23:55:34.807557+00:00',
+  endTime: '2025-03-23T23:55:34.807557+00:00',
+  minSpending: null,
+  rate: -3.14,
+  points: null
+}
+createPromotion 400 Invalid rate {
+  name: 'Negative Rate',
+  description: 'Testing negative rate',
+  type: 'automatic',
+  startTime: '2025-03-22T23:55:34.807557+00:00',
+  endTime: '2025-03-23T23:55:34.807557+00:00',
+  minSpending: null,
+  rate: -3.14,
+  points: null
+}
+createPromotion called, req.body: {
+  name: 'Negative Points',
+  description: 'Testing negative points',
+  type: 'one-time',
+  startTime: '2025-03-22T23:55:34.811199+00:00',
+  endTime: '2025-03-23T23:55:34.811199+00:00',
+  minSpending: null,
+  rate: null,
+  points: -3
+}
+createPromotion 400 Invalid points {
+  name: 'Negative Points',
+  description: 'Testing negative points',
+  type: 'one-time',
+  startTime: '2025-03-22T23:55:34.811199+00:00',
+  endTime: '2025-03-23T23:55:34.811199+00:00',
+  minSpending: null,
+  rate: null,
+  points: -3
+}
+createPromotion called, req.body: {
+  name: '',
+  description: '',
+  type: '',
+  startTime: '2025-03-22T23:55:34.814827+00:00',
+  endTime: '2025-03-23T23:55:34.814827+00:00',
+  minSpending: null,
+  rate: null,
+  points: null
+}
+createPromotion 400 Missing required fields {
+  name: '',
+  description: '',
+  type: '',
+  startTime: '2025-03-22T23:55:34.814827+00:00',
+  endTime: '2025-03-23T23:55:34.814827+00:00',
+  minSpending: null,
+  rate: null,
+  points: null
+}
+createPromotion called, req.body: {
+  name: 'Spring Sale',
+  description: 'This is a test promotion',
+  type: 'automatic',
+  startTime: '2025-03-21T23:55:34.818320+00:00',
+  endTime: '2025-03-22T23:55:34.818320+00:00',
+  minSpending: 50,
+  rate: 0.02,
+  points: 10
+}
+createPromotion called, req.body: {
+  name: 'Start of Summer Celebration',
+  description: 'A simple promotion',
+  type: 'one-time',
+  startTime: '2025-03-23T23:55:34.818320+00:00',
+  endTime: '2025-03-25T23:55:34.818320+00:00',
+  minSpending: 50,
+  rate: 0.01,
+  points: 0
+}
+createPromotion called, req.body: {
+  name: 'Instant Promotion',
+  description: 'A promotion that starts NOW!',
+  type: 'one-time',
+  startTime: '2025-03-20T23:55:39.832215+00:00',
+  endTime: '2025-09-16T23:55:34.832245+00:00',
+  minSpending: 10,
+  rate: 0.01,
+  points: 10
+}
+getPromotions called
+getPromotions 400 Page and limit must be positive integers { page: '-1' }
+getPromotions called
+getPromotions 400 Page and limit must be positive integers { limit: '-1' }
+getPromotions called
+getPromotions called
+getPromotions 400 Cannot have both started and ended together { started: 'true', ended: 'true' }
+getPromotions called
+getPromotionById called
+getPromotionById 404 Promotion not found { promotionId: '3' }
+getPromotionById called
+getPromotionById called
+getPromotionById 404 Promotion not found { promotionId: '999999' }
+getPromotionById called
+PATCH : /promotions/1 - allowed roles [ 'manager', 'superuser' ]  - user role cashier
+updatePromotion called
+updatePromotion 400 Start time cannot be in the past body: {
+  name: null,
+  description: null,
+  type: null,
+  startTime: '2025-03-19T23:55:39.892681+00:00',
+  endTime: null,
+  minSpending: null,
+  rate: null,
+  points: null
+} params: { promotionId: '1' }
+updatePromotion called
+updatePromotion 400 Start time cannot be in the past body: {
+  name: null,
+  description: null,
+  type: null,
+  startTime: '2025-03-20T23:55:39.899340+00:00',
+  endTime: '2025-03-19T23:55:39.899340+00:00',
+  minSpending: null,
+  rate: null,
+  points: null
+} params: { promotionId: '1' }
+updatePromotion called
+updatePromotion 400 Invalid rate body: {
+  name: null,
+  description: null,
+  type: null,
+  startTime: null,
+  endTime: null,
+  minSpending: null,
+  rate: -3.14,
+  points: null
+} params: { promotionId: '1' }
+updatePromotion called
+updatePromotion 400 Start time cannot be in the past body: {
+  name: null,
+  description: null,
+  type: null,
+  startTime: '2025-03-19T23:55:39.909717+00:00',
+  endTime: null,
+  minSpending: null,
+  rate: null,
+  points: null
+} params: { promotionId: '1' }
+updatePromotion called
+updatePromotion 400 Start time cannot be in the past body: {
+  name: null,
+  description: null,
+  type: null,
+  startTime: '2025-03-20T23:55:39.915179+00:00',
+  endTime: '2025-03-19T23:55:39.915179+00:00',
+  minSpending: null,
+  rate: null,
+  points: null
+} params: { promotionId: '1' }
+updatePromotion called
+updatePromotion 400 Invalid rate body: {
+  name: null,
+  description: null,
+  type: null,
+  startTime: null,
+  endTime: null,
+  minSpending: null,
+  rate: -3.14,
+  points: null
+} params: { promotionId: '1' }
+updatePromotion called
+updatePromotion called
+updatePromotion 404 Promotion not found body: {
+  name: 'New Name That Wont Work',
+  description: null,
+  type: null,
+  startTime: null,
+  endTime: null,
+  minSpending: null,
+  rate: null,
+  points: null
+} params: { promotionId: '999999' }
+deletePromotion called
+deletePromotion 403 Cannot delete a promotion that has already started { promotionId: '3' }
+createPromotion called, req.body: {
+  name: 'Delete Test Promo',
+  description: 'To be deleted',
+  type: 'one-time',
+  startTime: '2025-03-23T23:55:39.944555+00:00',
+  endTime: '2025-03-24T23:55:39.944555+00:00',
+  minSpending: null,
+  rate: null,
+  points: 20
+}
+deletePromotion called
+deletePromotion called
+deletePromotion 404 Promotion not found { promotionId: '999999' }
+user total points  245 after this transaction added 200

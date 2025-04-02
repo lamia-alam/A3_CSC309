@@ -1,0 +1,136 @@
+Server running on port 30641
+POST /resets called
+POST /resets called
+POST /resets called
+POST /resets called
+POST /resets/:resetToken called
+Token expired --  token expiry: Mon Mar 17 2025 17:32:51 GMT-0400 (Eastern Daylight Time) current time: Mon Mar 17 2025 17:32:51 GMT-0400 (Eastern Daylight Time)
+POST /resets/:resetToken called
+POST /resets/:resetToken called
+POST /resets/:resetToken called
+POST /resets/:resetToken called
+POST /resets/:resetToken called
+POST /resets/:resetToken called
+POST /resets/:resetToken called
+POST /resets/:resetToken called
+Token expired --  token expiry: Mon Mar 17 2025 18:32:51 GMT-0400 (Eastern Daylight Time) current time: Mon Mar 17 2025 17:32:51 GMT-0400 (Eastern Daylight Time)
+POST /resets/:resetToken called
+Token expired --  token expiry: Mon Mar 24 2025 17:32:52 GMT-0400 (Eastern Daylight Time) current time: Mon Mar 17 2025 17:32:52 GMT-0400 (Eastern Daylight Time)
+getUsers called
+🚀 ~ getUsers ~ filters: {}
+getUsers 400 Invalid input
+getUsers called
+🚀 ~ getUsers ~ filters: {}
+getUsers called
+🚀 ~ getUsers ~ filters: { name: { contains: 'John Doe' } }
+getUsers called
+🚀 ~ getUsers ~ filters: { role: { equals: 'regular' } }
+getUsers called
+🚀 ~ getUsers ~ filters: { verified: true }
+updateUserById called
+updateUserById 400 At least one field must be provided to update
+updateUserById called
+updateUserById 400 Invalid email format req.body:  { email: 'invalid@', verified: null, suspicious: null, role: null }
+updateUserById called
+update object: { verified: false }
+updateUserById called
+update object: { email: 'john.doe@mail.utoronto.ca', verified: true, role: 'manager' }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+updateUserById called
+update object: { verified: true }
+🚀 ~ authentication ~ error: JsonWebTokenError: jwt malformed
+    at module.exports [as verify] (/data/markus/workspace/workers/autotsu7/node_modules/jsonwebtoken/verify.js:70:17)
+    at verifyToken (/data/markus/workspace/workers/autotsu7/utils/jwt.js:17:16)
+    at authentication (/data/markus/workspace/workers/autotsu7/middleware/auth.js:17:21)
+    at Layer.handle [as handle_request] (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/layer.js:95:5)
+    at next (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/layer.js:95:5)
+    at /data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/index.js:346:12)
+    at next (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/index.js:280:10) path:  /events method:  POST
+getEvents called
+getEventById called
+🚀 ~ getEventById ~ error: PrismaClientValidationError: 
+Invalid `prisma.event.findUnique()` invocation in
+/data/markus/workspace/workers/autotsu7/controllers/events.js:258:38
+
+  255 const { eventId } = req.params;
+  256 
+  257 try {
+→ 258   const event = await prisma.event.findUnique({
+          where: {
+        +   id: Int
+          },
+          include: {
+            EventGuests: {
+              include: {
+                guest: true
+              }
+            },
+            EventOrganizer: {
+              include: {
+                organizer: true
+              }
+            }
+          }
+        })
+
+Argument `id` is missing.
+    at Pn (/data/markus/workspace/workers/autotsu7/node_modules/@prisma/client/runtime/library.js:29:1363)
+    at Un.handleRequestError (/data/markus/workspace/workers/autotsu7/node_modules/@prisma/client/runtime/library.js:121:7090)
+    at Un.handleAndLogRequestError (/data/markus/workspace/workers/autotsu7/node_modules/@prisma/client/runtime/library.js:121:6771)
+    at Un.request (/data/markus/workspace/workers/autotsu7/node_modules/@prisma/client/runtime/library.js:121:6478)
+    at async l (/data/markus/workspace/workers/autotsu7/node_modules/@prisma/client/runtime/library.js:130:9644)
+    at async getEventById (/data/markus/workspace/workers/autotsu7/controllers/events.js:258:19) {
+  clientVersion: '6.4.1'
+}
+Request params: { eventId: 'None' }
+🚀 ~ authentication ~ error: JsonWebTokenError: jwt malformed
+    at module.exports [as verify] (/data/markus/workspace/workers/autotsu7/node_modules/jsonwebtoken/verify.js:70:17)
+    at verifyToken (/data/markus/workspace/workers/autotsu7/utils/jwt.js:17:16)
+    at authentication (/data/markus/workspace/workers/autotsu7/middleware/auth.js:17:21)
+    at Layer.handle [as handle_request] (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/layer.js:95:5)
+    at next (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/layer.js:95:5)
+    at /data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/index.js:346:12)
+    at next (/data/markus/workspace/workers/autotsu7/node_modules/express/lib/router/index.js:280:10) path:  /promotions method:  POST
