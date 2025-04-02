@@ -1,10 +1,11 @@
 Implemented so far: 
 
-Rough layout (created pages)\n
-Created seed script with dummy data\n
-Implemented login/logout\n
-Create rough events table\n 
+Rough layout (created pages)<br />
+Created seed script with dummy data<br />
+Implemented login/logout<br />
+Create rough events table<br />
 
-\n\n
+<br />
+<br />
 
 Make sure to create your own branches for your work! 
