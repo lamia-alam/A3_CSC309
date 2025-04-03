@@ -602,6 +602,7 @@ const getTransactions = async (req, res) => {
       count: transactions.length,
       results: transactions.map((transaction) => ({
         id: transaction.id,
+        createdAt: transaction.createdAt,
         type: transaction.type,
         relatedId: transaction.relatedId,
         spent: transaction.spent,
