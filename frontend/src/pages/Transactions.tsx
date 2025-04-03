@@ -2,13 +2,13 @@ import React, {useContext, useEffect} from 'react'
 import {api} from "../config/api.ts";
 import "../style.css"
 import {AuthContext} from "../context/AuthContext.tsx";
-import TransactionFilters from "../components/TransactionFilters.tsx";
+import TransactionFilters, {FiltersState} from "../components/TransactionFilters.tsx";
 
 export const Transactions:React.FC = () => {
   const [trans, setTrans] = React.useState([])
   const { userInfo } = useContext(AuthContext);
   const [userMap, setUserMap] = React.useState(new Map<string, string>())
-  const [filters, setFilters] = React.useState({})
+  const [filters, setFilters] = React.useState({} as FiltersState)
 
   const fetchTransactions = async (filters: Object) => {
     if (userInfo !== null && ["regular", "cashier"].includes(userInfo.role)) {
@@ -23,7 +23,10 @@ export const Transactions:React.FC = () => {
   }
 
   useEffect(() => {
-    console.log(filters)
+    if (filters.createdBy !== "") {
+      const key = [...userMap.entries()].find(([_k, v]) => v === filters.createdBy)?.[0];
+      filters.createdBy = key ?? ""
+    }
     fetchTransactions(filters).then(res => {
       setTrans(res?.data.results)
     })
@@ -42,10 +45,10 @@ export const Transactions:React.FC = () => {
   return (
       <div className={"grid grid-cols-5"}>
           <TransactionFilters onFilterChange={filters => setFilters(filters)}/>
-          <div className="grid grid-cols-3 gap-4 bg-gray-100 p-3 col-span-4 ">
+          <div className="grid grid-cols-3 gap-3 p-3 col-span-4 auto-rows-min ">
             {trans.map(transaction => {
               return (
-                  <div className="card bg-base-100 w-96 shadow-sm">
+                  <div className="card bg-gray-100 w-96 shadow-sm">
                     <div className="card-body">
                       {transaction["suspicious"] === true &&
                           <span className="badge badge-xs badge-warning">Suspicious</span>}

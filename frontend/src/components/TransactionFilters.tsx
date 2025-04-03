@@ -4,7 +4,7 @@ type FiltersProps = {
     onFilterChange: (filters: FiltersState) => void;
 };
 
-type FiltersState = {
+export type FiltersState = {
     name: string;
     createdBy: string;
     suspicious: string;
@@ -36,9 +36,9 @@ const TransactionFilters: React.FC<FiltersProps> = ({ onFilterChange }) => {
     };
 
     return (
-        <div className="p-4">
+        <div className="p-3">
             <h2 className="text-lg font-semibold mb-4">Filters</h2>
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-3">
                 <input
                     type="text"
                     name="name"
