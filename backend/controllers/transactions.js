@@ -319,8 +319,10 @@ const getTransactions = async (req, res) => {
       },
     });
 
+    const totalTrans = await prisma.transaction.count({where: where});
+
     res.status(200).json({
-      count: transactions.length,
+      count: totalTrans,
       results: transactions.map((transaction) => ({
         id: transaction.id,
         utorid: transaction.user.utorid,

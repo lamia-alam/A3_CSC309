@@ -6,6 +6,8 @@ import TransactionFilters, {FiltersState} from "../components/TransactionFilters
 
 export const Transactions:React.FC = () => {
   const [trans, setTrans] = React.useState([])
+  const [page, setPage] = React.useState(1)
+  const [maxPage, setMaxPage] = React.useState(1)
   const { userInfo } = useContext(AuthContext);
   const [userMap, setUserMap] = React.useState(new Map<string, string>())
   const [filters, setFilters] = React.useState({} as FiltersState)
@@ -27,10 +29,11 @@ export const Transactions:React.FC = () => {
       const key = [...userMap.entries()].find(([_k, v]) => v === filters.createdBy)?.[0];
       filters.createdBy = key ?? ""
     }
-    fetchTransactions(filters).then(res => {
+    fetchTransactions({...filters, page: page, limit: 6}).then(res => {
       setTrans(res?.data.results)
+      setMaxPage(Math.ceil(res?.data.count/6))
     })
-  }, [filters]);
+  }, [filters, page]);
 
   useEffect(() => {
     fetchUsers().then(res => {
@@ -43,31 +46,39 @@ export const Transactions:React.FC = () => {
   }, []);
 
   return (
+      <div>
       <div className={"grid grid-cols-5"}>
-          <TransactionFilters onFilterChange={filters => setFilters(filters)}/>
-          <div className="grid grid-cols-3 gap-3 p-3 col-span-4 auto-rows-min ">
-            {trans.map(transaction => {
-              return (
-                  <div className="card bg-gray-100 w-96 shadow-sm">
-                    <div className="card-body">
-                      {transaction["suspicious"] === true &&
-                          <span className="badge badge-xs badge-warning">Suspicious</span>}
-                      <h2 className="card-title">
-                        Transaction {transaction['id']}
-                        <div
-                            className={`badge badge-secondary badgeColor-${transaction['type']}`}>{String(transaction['type']).toUpperCase()}</div>
-                      </h2>
-                      <div className="divider"></div>
-                      <p>Notes: {transaction['remark']}</p>
-                      <p>Created by: {userMap.get(transaction['createdBy'])}</p>
-                      <p>Customer: {userMap.get(transaction['utorid'])}</p>
-                      <p>Points Awarded: {transaction['amount']}</p>
-                      <p>Points Spent: {transaction['spent'] ?? 0}</p>
-                    </div>
+        <TransactionFilters onFilterChange={filters => setFilters(filters)}/>
+        <div className="grid grid-cols-3 gap-3 p-3 col-span-4 auto-rows-min ">
+          {trans.map(transaction => {
+            return (
+                <div className="card bg-gray-100 w-96 shadow-sm">
+                  <div className="card-body">
+                    {transaction["suspicious"] === true &&
+                        <span className="badge badge-xs badge-warning">Suspicious</span>}
+                    <h2 className="card-title">
+                      Transaction {transaction['id']}
+                      <div
+                          className={`badge badge-secondary badgeColor-${transaction['type']}`}>{String(transaction['type']).toUpperCase()}</div>
+                    </h2>
+                    <div className="divider"></div>
+                    <p>Notes: {transaction['remark']}</p>
+                    <p>Created by: {userMap.get(transaction['createdBy'])}</p>
+                    <p>Customer: {userMap.get(transaction['utorid'])}</p>
+                    <p>Points Awarded: {transaction['amount']}</p>
+                    <p>Points Spent: {transaction['spent'] ?? 0}</p>
                   </div>
-              )
-            })}
-          </div>
+                </div>
+            )
+          })}
         </div>
-        )
-        }
+      </div>
+  <div className="join flex flex-row justify-end p-3">
+    <button className="join-item btn btn-outline w-30" onClick={() => setPage(page - 1)} disabled={page === 1}>Previous
+    </button>
+    <button className="join-item btn btn-outline w-30" onClick={() => setPage(page + 1)} disabled={page === maxPage}>Next
+    </button>
+  </div>
+  </div>
+)
+}
