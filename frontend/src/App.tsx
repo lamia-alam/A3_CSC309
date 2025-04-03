@@ -14,6 +14,7 @@ import {
 } from "./components/ProtectedRoutes";
 
 function App() {
+  
   return (
     <Routes>
       <Route element={<BaseLayout />}>
