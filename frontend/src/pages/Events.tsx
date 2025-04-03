@@ -8,10 +8,9 @@ import type {
   SizeColumnsToFitGridStrategy,
   SizeColumnsToFitProvidedWidthStrategy,
 } from "ag-grid-community";
-import { useNotification } from "../context/NotificationContext";
-import { AxiosError } from "axios";
 import { EventActions } from "../components/events/EventActions";
 import { useAuth } from "../context/AuthContext";
+import { CreateEventModal } from "../components/events/CreateEventModal";
 
 export type EventType = {
   id: number;
@@ -28,7 +27,6 @@ export type EventType = {
 
 export const Events: React.FC = () => {
   const {userInfo} = useAuth();
-  const { createNotification } = useNotification();
   const [events, setEvents] = useState<Event[]>([]);
 
   const [colDefs] = useState<ColDef<EventType>[]>([
@@ -132,6 +130,7 @@ export const Events: React.FC = () => {
           defaultColDef={defaultColDef}
         />
       </div>
+      <CreateEventModal />
     </>
   );
 

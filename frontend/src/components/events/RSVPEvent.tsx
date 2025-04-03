@@ -14,17 +14,20 @@ export const RSVPEvent: React.FC<{
     try {
       const response = await api.post(`/events/${eventId}/guests/me`);
       if (response.status === 201) {
-        createNotification("RSVP successful", "success");
+        createNotification({ message: "RSVP successful", type: "success" });
         refreshData();
       }
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response) {
           // The request was made and the server responded with a status code
-          createNotification(error.response.data.error, "error");
+          createNotification({
+            message: error.response.data.error,
+            type: "error",
+          });
         } else {
           // The request was made but no response was received
-          createNotification("Network error", "error");
+          createNotification({ message: "Network error", type: "error" });
         }
       }
     }

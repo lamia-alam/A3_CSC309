@@ -800,8 +800,8 @@ const removeEventOrganizer = async (req, res) => {
 
 const addEventGuest = async (req, res) => {
   console.log("addEventGuest called", "params:", req.params, "body:", req.body);
-  const { eventId } = req.params;
   const { utorid } = req.body;
+  const { eventId } = req.params;
 
   if (!eventId || isNaN(parseInt(eventId, 10))) {
     console.log(

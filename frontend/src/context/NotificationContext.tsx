@@ -7,7 +7,7 @@ type Notification = {
 };
 
 type NotificationContextType = {
-  createNotification: (message: string, type: "success" | "error") => void;
+  createNotification: ({message, type}: {message: string, type: "success" | "error"}) => void;
 };
 
 const NotificationContext = React.createContext<NotificationContextType>({
@@ -21,7 +21,7 @@ export const NotificationProvider: React.FC<PropsWithChildren> = ({
 }) => {
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
 
-  const createNotification = (message: string, type: "success" | "error") => {
+  const createNotification = ({message, type}:{message: string, type: "success" | "error"}) => {
     const id = Date.now();
     const newNotification = { id, message, type };
     setNotifications((prev) => [...prev, newNotification]);
