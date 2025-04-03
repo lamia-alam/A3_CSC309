@@ -94,133 +94,142 @@ export const CreateEventModal: React.FC = () => {
 
   return (
     <>
-      <label htmlFor="my_modal_6" className="btn">
-        open modal
-      </label>
-
-      {/* Put this part before </body> tag */}
-      <input
-        type="checkbox"
-        ref={modalCheckboxRef}
-        id="my_modal_6"
-        className="modal-toggle"
-      />
-
-      {/* <button className="btn" onClick={openModel}>
-        Create Event
-      </button> */}
-      <div className="modal" role="dialog">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Create new event</h3>
-          <div className="py-4">
-            <form className="space-y-4">
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Event name</legend>
-                <input
-                  type="text"
-                  className="input"
-                  placeholder="Type here"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </fieldset>
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Location</legend>
-                <input
-                  type="text"
-                  className="input"
-                  placeholder="Event Location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                />
-              </fieldset>
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Start Time</legend>
-                <input
-                  type="datetime-local"
-                  className="input"
-                  name="startTime"
-                  value={
-                    formData.startTime
-                      ? formatDateTimeAsISO(formData.startTime)
-                      : ""
-                  }
-                  onChange={handleChange}
-                  required
-                />
-              </fieldset>
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">End Time</legend>
-                <input
-                  type="datetime-local"
-                  className="input"
-                  name="endTime"
-                  value={
-                    formData.endTime
-                      ? formatDateTimeAsISO(formData.endTime)
-                      : ""
-                  }
-                  onChange={handleChange}
-                  required
-                />
-              </fieldset>
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Description</legend>
-                <textarea
-                  className="textarea"
-                  placeholder="Event Description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                ></textarea>
-              </fieldset>
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Capacity</legend>
-                <input
-                  type="number"
-                  className="input"
-                  placeholder="Event Capacity"
-                  name="capacity"
-                  min={0}
-                  value={formData.capacity || ""}
-                  onChange={handleChange}
-                />
-                <p className="fieldset-label">Optional</p>
-              </fieldset>
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Points</legend>
-                <input
-                  type="number"
-                  className="input"
-                  placeholder="Event Points"
-                  name="points"
-                  value={formData.points || ""}
-                  onChange={handleChange}
-                  min={0}
-                  required
-                />
-              </fieldset>
-            </form>
-          </div>
-          <div className="modal-action">
-            <form method="dialog">
-              <button
-                className="btn mr-2 btn-primary"
-                disabled={!formValidation()}
-                onClick={handleSubmit}
-              >
-                Create
-              </button>
-              <button className="btn">Close</button>
-            </form>
-          </div>
+      <div className="drawer drawer-end">
+        <input
+          id="my-drawer-4"
+          type="checkbox"
+          ref={modalCheckboxRef}
+          className="drawer-toggle"
+        />
+        <div className="drawer-content">
+          {/* Page content here */}
+          <label
+            htmlFor="my-drawer-4"
+            className="drawer-button btn btn-primary"
+          >
+            Open drawer
+          </label>
+        </div>
+        <div className="drawer-side">
+          <label
+            htmlFor="my-drawer-4"
+            aria-label="close sidebar"
+            className="drawer-overlay"
+          ></label>
+          <ul className="menu bg-base-200 text-base-content min-h-full z-10 w-80 p-4">
+            {/* Sidebar content here */}
+            <h3 className="font-bold text-lg">Create new event</h3>
+            <div className="py-4">
+              <form className="space-y-4">
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">Event name</legend>
+                  <input
+                    type="text"
+                    className="input"
+                    placeholder="Type here"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </fieldset>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">Location</legend>
+                  <input
+                    type="text"
+                    className="input"
+                    placeholder="Event Location"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    required
+                  />
+                </fieldset>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">Start Time</legend>
+                  <input
+                    type="datetime-local"
+                    className="input"
+                    name="startTime"
+                    value={
+                      formData.startTime
+                        ? formatDateTimeAsISO(formData.startTime)
+                        : ""
+                    }
+                    onChange={handleChange}
+                    required
+                  />
+                </fieldset>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">End Time</legend>
+                  <input
+                    type="datetime-local"
+                    className="input"
+                    name="endTime"
+                    value={
+                      formData.endTime
+                        ? formatDateTimeAsISO(formData.endTime)
+                        : ""
+                    }
+                    onChange={handleChange}
+                    required
+                  />
+                </fieldset>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">Description</legend>
+                  <textarea
+                    className="textarea"
+                    placeholder="Event Description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
+                </fieldset>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">Capacity</legend>
+                  <input
+                    type="number"
+                    className="input"
+                    placeholder="Event Capacity"
+                    name="capacity"
+                    min={0}
+                    value={formData.capacity || ""}
+                    onChange={handleChange}
+                  />
+                  <p className="fieldset-label">Optional</p>
+                </fieldset>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">Points</legend>
+                  <input
+                    type="number"
+                    className="input"
+                    placeholder="Event Points"
+                    name="points"
+                    value={formData.points || ""}
+                    onChange={handleChange}
+                    min={0}
+                    required
+                  />
+                </fieldset>
+              </form>
+            </div>
+            <div className="modal-action">
+              <form method="dialog">
+                <button
+                  className="btn mr-2 btn-primary"
+                  disabled={!formValidation()}
+                  onClick={handleSubmit}
+                >
+                  Create
+                </button>
+                <button className="btn">Close</button>
+              </form>
+            </div>
+          </ul>
         </div>
       </div>
+      
     </>
   );
 };

@@ -120,6 +120,7 @@ export const Events: React.FC = () => {
       <div className="w-full h-2/3">
         <AgGridReact
           autoSizeStrategy={autoSizeStrategy}
+          suppressRowTransform={true}
           rowData={events}
           columnDefs={colDefs}
           rowHeight={40}
