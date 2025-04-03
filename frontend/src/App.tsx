@@ -18,6 +18,7 @@ function App() {
     <Routes>
       <Route element={<BaseLayout />}>
         <Route element={<ProtectedRoutes />}>
+          <Route path={Pages.HOME} element={<Home />} />
           <Route path={Pages.ACCOUNT} element={<Account />} />
           <Route path={Pages.EVENTS} element={<Events />} />
           <Route path={Pages.PROMOTIONS} element={<Promotions />} />
@@ -26,7 +27,6 @@ function App() {
         </Route>
         <Route element={<UnauthenticatedRoutes />}>
           <Route path={Pages.LOGIN} element={<Login />} />
-          <Route path={Pages.HOME} element={<Home />} />
         </Route>
       </Route>
     </Routes>

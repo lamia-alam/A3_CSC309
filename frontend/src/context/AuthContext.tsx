@@ -45,11 +45,18 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   };
 
   const getUserInfo = async () => {
-    const res = await api.get("/users/me");
-    setUserInfo(res.data);
-  };
+    try {
+      console.log("Calling /users/me...");
+      const res = await api.get("/users/me");
+      console.log("Fetched userInfo:", res.data);
+      setUserInfo(res.data);
+    } catch (err) {
+      console.error("Failed to fetch userInfo", err);
+    }
+  };  
 
   const logout = () => {
+    localStorage.removeItem("token");
     setIsAuthenticated(false);
     setUserInfo(null);
   };
@@ -57,10 +64,13 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
+      console.log("Token found, calling getUserInfo()", token);
       setIsAuthenticated(true);
       getUserInfo();
+    } else {
+      console.log("No token found");
     }
-  }, []);
+  }, []);  
 
   useEffect(() => {
     if (isAuthenticated) {
