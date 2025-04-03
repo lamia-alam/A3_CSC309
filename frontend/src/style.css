@@ -1,0 +1,24 @@
+.badgeColor-purchase {
+    background-color: blue;
+    border-color: blue;
+}
+
+.badgeColor-adjustment {
+    background-color: teal;
+    border-color: teal;
+}
+
+.badgeColor-transfer {
+    background-color: hotpink;
+    border-color: hotpink;
+}
+
+.badgeColor-redemption {
+    background-color: orange;
+    border-color: orange;
+}
+
+.badgeColor-event {
+    background-color: black;
+    border-color: black;
+}
