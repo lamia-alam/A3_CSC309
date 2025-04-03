@@ -10,7 +10,9 @@ const formatDateTimeAsISO = (date: Date) => {
   )}:${padToTwoDigits(date.getMinutes())}`;
 };
 
-export const CreateEventModal: React.FC = () => {
+export const CreateEventModal: React.FC<{ refreshData: () => void }> = ({
+  refreshData,
+}) => {
   const modalCheckboxRef = useRef<HTMLInputElement>(null);
   const { createNotification } = useNotification();
 
@@ -84,6 +86,8 @@ export const CreateEventModal: React.FC = () => {
         capacity: null,
         points: 0,
       });
+      modalCheckboxRef.current!.checked = false;
+      refreshData();
     } else {
       createNotification({
         type: "error",
@@ -91,6 +95,10 @@ export const CreateEventModal: React.FC = () => {
       });
     }
   };
+
+  const handleClose = () => {
+    modalCheckboxRef.current!.checked = false;
+  }
 
   return (
     <>
@@ -107,16 +115,16 @@ export const CreateEventModal: React.FC = () => {
             htmlFor="my-drawer-4"
             className="drawer-button btn btn-primary"
           >
-            Open drawer
+            Create Event
           </label>
         </div>
-        <div className="drawer-side">
+        <div className="drawer-side z-10">
           <label
             htmlFor="my-drawer-4"
             aria-label="close sidebar"
             className="drawer-overlay"
           ></label>
-          <ul className="menu bg-base-200 text-base-content min-h-full z-10 w-80 p-4">
+          <ul className="menu bg-base-200 text-base-content min-h-full w-96 p-4">
             {/* Sidebar content here */}
             <h3 className="font-bold text-lg">Create new event</h3>
             <div className="py-4">
@@ -223,13 +231,12 @@ export const CreateEventModal: React.FC = () => {
                 >
                   Create
                 </button>
-                <button className="btn">Close</button>
+                <button className="btn" onClick={handleClose}>Close</button>
               </form>
             </div>
           </ul>
         </div>
       </div>
-      
     </>
   );
 };

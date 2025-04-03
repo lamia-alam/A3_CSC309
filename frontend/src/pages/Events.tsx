@@ -131,7 +131,7 @@ export const Events: React.FC = () => {
           defaultColDef={defaultColDef}
         />
       </div>
-      <CreateEventModal />
+      <CreateEventModal refreshData={fetchEvents}/>
     </>
   );
 
