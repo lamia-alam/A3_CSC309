@@ -4,12 +4,20 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Menu = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userInfo, viewAsRole } = useAuth();
+
   if (!isAuthenticated) return null;
+
+  // Determine the current role to view
+  const role = viewAsRole || userInfo?.role;
 
   return (
     <>
-      <li><Link to={Pages.USERS}>Users</Link></li>
+      {(role === "manager" || role === "superuser" || role === "cashier") && (
+        <li>
+          <Link to={Pages.USERS}>Users</Link>
+        </li>
+      )}
       <li><Link to={Pages.TRANSACTIONS}>Transactions</Link></li>
       <li><Link to={Pages.PROMOTIONS}>Promotions</Link></li>
       <li><Link to={Pages.EVENTS}>Events</Link></li>
