@@ -11,6 +11,7 @@ import type {
 import { EventActions } from "../components/events/EventActions";
 import { useAuth } from "../context/AuthContext";
 import { CreateEventModal } from "../components/events/CreateEventModal";
+import { EditEventDrawer } from "../components/events/EditEventDrawer";
 
 export type EventType = {
   id: number;
@@ -26,8 +27,12 @@ export type EventType = {
 };
 
 export const Events: React.FC = () => {
-  const {userInfo} = useAuth();
+  const { userInfo } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalItems, setTotalItems] = useState(0);
+  const [selectEventId, setSelectEventId] = useState<number | null>(null);
 
   const [colDefs] = useState<ColDef<EventType>[]>([
     {
@@ -37,7 +42,9 @@ export const Events: React.FC = () => {
       cellRenderer: (params: ICellRendererParams) => {
         return (
           <div className="flex items-center">
-            <span>{params.data.name}</span>
+            <span onClick={() => setSelectEventId(params.data.id)}>
+              {params.data.name}
+            </span>
             {params.data.published && (
               <span className="badge badge-sm badge-success ml-2"></span>
             )}
@@ -74,14 +81,18 @@ export const Events: React.FC = () => {
       headerName: "Points remaining",
       field: "pointsRemain",
       minWidth: 100,
-      hide: userInfo?.role === 'regular' || userInfo?.role === 'cashier',
+      hide: userInfo?.role === "regular" || userInfo?.role === "cashier",
     },
     { field: "capacity", headerName: "Capacity", width: 150 },
     {
       headerName: "Action",
       pinned: "right",
       cellRenderer: (params: ICellRendererParams) => (
-        <EventActions params={params} refreshData={fetchEvents} />
+        <EventActions
+          params={params}
+          refreshData={fetchEvents}
+          setSelectEventId={setSelectEventId}
+        />
       ),
     },
   ]);
@@ -97,8 +108,14 @@ export const Events: React.FC = () => {
   }, []);
 
   const fetchEvents = async () => {
-    const response = await api.get("/events");
+    const response = await api.get("/events", {
+      params: {
+        page,
+        limit: pageSize,
+      },
+    });
     setEvents(response.data.results);
+    setTotalItems(response.data.count);
   };
 
   const autoSizeStrategy = useMemo<
@@ -111,27 +128,155 @@ export const Events: React.FC = () => {
     };
   }, []);
 
+  const pageCount = useMemo(() => {
+    return Math.ceil(totalItems / pageSize);
+  }, [totalItems, pageSize]);
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setPage(1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [page, pageSize]);
 
   return (
     <>
-      <div className="w-full h-2/3">
+      <label
+        htmlFor="my-drawer-4"
+        className="drawer-button btn btn-primary float-right"
+      >
+        Create Event
+      </label>
+      
+      <EditEventDrawer 
+        eventId={selectEventId}
+        setSelectEventId={setSelectEventId}
+        refreshData={fetchEvents}
+        />
+      <CreateEventModal
+        refreshData={fetchEvents}
+      />
+      <div className="w-full h-2/3 mt-4">
         <AgGridReact
           autoSizeStrategy={autoSizeStrategy}
-          suppressRowTransform={true}
           rowData={events}
           columnDefs={colDefs}
           rowHeight={40}
           headerHeight={40}
-          pagination={true}
-          paginationPageSize={10}
           domLayout="autoHeight"
           defaultColDef={defaultColDef}
         />
       </div>
-      <CreateEventModal refreshData={fetchEvents}/>
+      <div className="flex justify-between items-center mt-4">
+        <div className="flex items-center gap-2 justify-start">
+          <div className="join">
+            <button className="join-item btn">Show per page</button>
+            {[5, 10, 15, 20].map((size) => (
+              <input
+                key={size}
+                className="join-item btn btn-square"
+                type="radio"
+                name="pageSize"
+                aria-label={size.toString()}
+                checked={pageSize === size}
+                onChange={() => handlePageSizeChange(size)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="join">
+          <button className="join-item btn">Page</button>
+
+          {pageCount > 1 &&
+            Array.from({ length: pageCount }, (_, index) => (
+              <input
+                className="join-item btn btn-square"
+                type="radio"
+                name="pageNumber"
+                aria-label={`${index + 1}`}
+                key={index}
+                onChange={() => handlePageChange(index + 1)}
+                checked={page === index + 1}
+              />
+            ))}
+          {/* <input
+          className="join-item btn btn-square"
+          type="radio"
+          name="options"
+          aria-label="1"
+          checked
+        />
+        <input
+          className="join-item btn btn-square"
+          type="radio"
+          name="options"
+          aria-label="2"
+        />
+        <input
+          className="join-item btn btn-square"
+          type="radio"
+          name="options"
+          aria-label="3"
+        />
+        <input
+          className="join-item btn btn-square"
+          type="radio"
+          name="options"
+          aria-label="4"
+        /> */}
+        </div>
+      </div>
+
+      {/* <div className="flex justify-between items-center mt-4">
+        <div>
+          <span>
+            Page {page} of {Math.ceil(totalItems / pageSize)}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="pageSize" className="mr-2">
+            Page Size:
+          </label>
+          <select
+            id="pageSize"
+            className="select select-sm"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            className="btn btn-sm"
+            disabled={page === 1}
+            onClick={() => {
+              setPage((prev) => Math.max(prev - 1, 1));
+            }}
+          >
+            Previous
+          </button>
+          <button
+            className="btn btn-sm"
+            disabled={page === Math.ceil(totalItems / pageSize)}
+            onClick={() => {
+              setPage((prev) =>
+                Math.min(prev + 1, Math.ceil(totalItems / pageSize))
+              );
+            }}
+          >
+            Next
+          </button>
+        </div>
+      </div> */}
     </>
   );
 
