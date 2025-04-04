@@ -1,12 +1,11 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { api } from "../config/api";
-
-type AuthContextType = {
-  isAuthenticated: boolean;
-  login: (utorid: string, password: string) => Promise<void>;
-  logout: () => void;
-  userInfo: UserInfo | null;
-};
 
 type UserInfo = {
   id: string;
@@ -20,16 +19,30 @@ type UserInfo = {
   verified: boolean;
 };
 
+type AuthContextType = {
+  isAuthenticated: boolean;
+  login: (utorid: string, password: string) => Promise<void>;
+  logout: () => void;
+  userInfo: UserInfo | null;
+  refreshUserInfo: () => Promise<void>;
+  viewAsRole: string | null;
+  setViewAsRole: (role: string | null) => void;
+};
+
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   login: async () => console.log("Login function not implemented"),
   logout: () => console.log("Logout function not implemented"),
   userInfo: null,
+  refreshUserInfo: async () => {},
+  viewAsRole: null,
+  setViewAsRole: () => {},
 });
 
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [viewAsRole, setViewAsRole] = useState<string | null>(null);
 
   const login = async (utorid: string, password: string) => {
     const res = await api.post("/auth/tokens", {
@@ -38,48 +51,54 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     });
     if (res.status === 200) {
       localStorage.setItem("token", res.data.token);
+      setIsAuthenticated(true);
     } else {
       alert("Login failed");
     }
-    setIsAuthenticated(true);
   };
 
-  const getUserInfo = async () => {
+  const refreshUserInfo = async () => {
     try {
-      console.log("Calling /users/me...");
       const res = await api.get("/users/me");
-      console.log("Fetched userInfo:", res.data);
       setUserInfo(res.data);
     } catch (err) {
-      console.error("Failed to fetch userInfo", err);
+      console.error("Failed to refresh user info:", err);
     }
-  };  
+  };
 
   const logout = () => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
     setUserInfo(null);
+    setViewAsRole(null);
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      console.log("Token found, calling getUserInfo()", token);
       setIsAuthenticated(true);
-      getUserInfo();
-    } else {
-      console.log("No token found");
+      refreshUserInfo();
     }
-  }, []);  
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
-      getUserInfo();
+      refreshUserInfo();
     }
   }, [isAuthenticated]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, userInfo }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        login,
+        logout,
+        userInfo,
+        refreshUserInfo,
+        viewAsRole,
+        setViewAsRole,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
