@@ -6,6 +6,7 @@ type AuthContextType = {
   login: (utorid: string, password: string) => Promise<void>;
   logout: () => void;
   userInfo: UserInfo | null;
+  refreshUserInfo: () => Promise<void>;
 };
 
 type UserInfo = {
@@ -25,6 +26,7 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => console.log("Login function not implemented"),
   logout: () => console.log("Logout function not implemented"),
   userInfo: null,
+  refreshUserInfo: async () => console.log("refreshUserInfo not implemented"),
 });
 
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -38,22 +40,20 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     });
     if (res.status === 200) {
       localStorage.setItem("token", res.data.token);
+      setIsAuthenticated(true);
     } else {
       alert("Login failed");
     }
-    setIsAuthenticated(true);
   };
 
-  const getUserInfo = async () => {
+  const refreshUserInfo = async () => {
     try {
-      console.log("Calling /users/me...");
       const res = await api.get("/users/me");
-      console.log("Fetched userInfo:", res.data);
       setUserInfo(res.data);
     } catch (err) {
-      console.error("Failed to fetch userInfo", err);
+      console.error("Failed to refresh userInfo", err);
     }
-  };  
+  };
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -64,22 +64,21 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      console.log("Token found, calling getUserInfo()", token);
       setIsAuthenticated(true);
-      getUserInfo();
-    } else {
-      console.log("No token found");
+      refreshUserInfo();
     }
-  }, []);  
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
-      getUserInfo();
+      refreshUserInfo();
     }
   }, [isAuthenticated]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, userInfo }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, login, logout, userInfo, refreshUserInfo }}
+    >
       {children}
     </AuthContext.Provider>
   );

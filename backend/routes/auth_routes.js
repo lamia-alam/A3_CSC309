@@ -93,6 +93,7 @@ router.post("/resets", async (req, res) => {
     });
   } catch (error) {
     console.error("Error in POST /resets:", error);
+    console.error(" Error message:", error.message);
     console.error("Request body:", req.body);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -169,6 +170,36 @@ router.post("/resets/:resetToken", async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
+
+router.post("/change-password", async (req, res) => {
+  const { utorid, oldPassword, newPassword } = req.body;
+
+  if (!utorid || !oldPassword || !newPassword) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(400).json({
+      message: "Password must be 8-20 characters, include uppercase, lowercase, number, and special character",
+    });
+  }
+
+  const user = await prisma.user.findUnique({ where: { utorid } });
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  const isValidOld = comparePassword(oldPassword, user.password);
+  if (!isValidOld) return res.status(401).json({ message: "Old password is incorrect" });
+
+  const hashed = await hashedPassword(newPassword);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { password: hashed },
+  });
+
+  res.status(200).json({ message: "Password changed successfully" });
+});
+
+
 
 router.post("/tokens", async (req, res) => {
   try {
