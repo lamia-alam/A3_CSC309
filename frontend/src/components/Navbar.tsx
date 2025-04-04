@@ -25,7 +25,10 @@ const getAvailableRoles = (role: string): string[] => {
 };
 
 export const Navbar: React.FC = () => {
-  const { isAuthenticated, logout, userInfo, viewAsRole, setViewAsRole } = useAuth();
+  const { isAuthenticated, logout, userInfo, viewAsRole, setViewAsRole, role } = useAuth();
+
+  const actualRole = userInfo?.role;
+  const availableRoles = actualRole ? getAvailableRoles(actualRole) : [];
 
   return (
     <div className="navbar bg-base-100 shadow-sm">
@@ -73,22 +76,30 @@ export const Navbar: React.FC = () => {
               <li><Link to="/account-info">Update Account Info</Link></li>
               <li><Link to="/reset-password-manual">Change Password</Link></li>
 
-              {userInfo && getAvailableRoles(userInfo.role).length > 0 && (
+              {availableRoles.length > 0 && (
                 <li className="mt-2">
                   <span className="font-semibold">View as:</span>
                   <ul className="pl-3">
-                    {getAvailableRoles(userInfo.role).map((role) => (
-                      <li key={role}>
-                        <button className="text-sm" onClick={() => setViewAsRole(role)}>
-                          {role.charAt(0).toUpperCase() + role.slice(1)}
+                    {availableRoles.map((r) => (
+                      <li key={r}>
+                        <button
+                          className={`text-sm ${viewAsRole === r ? "font-bold" : ""}`}
+                          onClick={() => setViewAsRole(r)}
+                        >
+                          {r.charAt(0).toUpperCase() + r.slice(1)}
                         </button>
                       </li>
                     ))}
-                    <li>
-                      <button className="text-sm text-green-600" onClick={() => setViewAsRole(null)}>
-                        Reset View
-                      </button>
-                    </li>
+                    {viewAsRole && (
+                      <li>
+                        <button
+                          className="text-sm text-green-600"
+                          onClick={() => setViewAsRole(null)}
+                        >
+                          Reset View
+                        </button>
+                      </li>
+                    )}
                   </ul>
                 </li>
               )}
