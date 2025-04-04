@@ -16,6 +16,7 @@ export const Users: React.FC = () => {
   const { userInfo, role } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [form, setForm] = useState({ name: "", utorid: "", email: "", role: "regular" });
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const isSuperuser = role === "superuser";
   const isManager = role === "manager";
@@ -66,9 +67,15 @@ export const Users: React.FC = () => {
     try {
       await api.post("/users", { name, utorid, email, role });
       setForm({ name: "", utorid: "", email: "", role: "regular" });
+      setSuccessMessage("User created ✅");
+      
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
+      
       if (isSuperuser || isManager) {
-        fetchUsers();
-      }
+        fetchUsers(); // Only refetch list if you're allowed to see it
+      }      
     } catch (err: any) {
       const message =
         err?.response?.data?.error || "An error occurred while creating the user.";
@@ -123,7 +130,11 @@ export const Users: React.FC = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-semibold mb-6">Users</h1>
-
+      {successMessage && (
+        <div className="alert alert-success shadow-lg mb-4">
+          <span>{successMessage}</span>
+        </div>
+      )}
       <div className="mb-8 bg-base-200 p-6 rounded-box max-w-lg">
         <h2 className="text-lg font-bold mb-4">Create New User</h2>
         {["utorid", "name", "email"].map((field) => (
