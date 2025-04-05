@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../config/api";
 import { useAuth } from "../context/AuthContext";
+import { CreateUserDrawer } from "../components/CreateUserDrawer";
 
 type User = {
   id: number;
@@ -104,134 +105,145 @@ export const Users: React.FC = () => {
   const handlePromote = async (id: number, currentRole: string) => {
     const order = ["regular", "cashier", "manager", "superuser"];
     const idx = order.indexOf(currentRole);
+    const nextRole = order[idx + 1];
+  
+    // Restrict manager from promoting managers or higher
+    if (isManager && (currentRole === "manager" || currentRole === "superuser")) {
+      alert("Managers cannot promote other managers or superusers.");
+      return;
+    }
+  
     if (idx < order.length - 1) {
       try {
-        await api.patch(`/users/${id}`, { role: order[idx + 1] });
+        await api.patch(`/users/${id}`, { role: nextRole });
         fetchUsers();
       } catch (err) {
         console.error("Failed to promote user", err);
       }
     }
-  };
+  };  
 
   const handleDemote = async (id: number, currentRole: string) => {
     const order = ["regular", "cashier", "manager", "superuser"];
     const idx = order.indexOf(currentRole);
+    const prevRole = order[idx - 1];
+  
+    // Restrict manager from demoting managers or superusers
+    if (isManager && (currentRole === "manager" || currentRole === "superuser")) {
+      alert("Managers cannot demote other managers or superusers.");
+      return;
+    }
+  
     if (idx > 0) {
       try {
-        await api.patch(`/users/${id}`, { role: order[idx - 1] });
+        await api.patch(`/users/${id}`, { role: prevRole });
         fetchUsers();
       } catch (err) {
         console.error("Failed to demote user", err);
       }
     }
-  };
+  };  
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-6">Users</h1>
-      {successMessage && (
-        <div className="alert alert-success shadow-lg mb-4">
-          <span>{successMessage}</span>
-        </div>
-      )}
-      <div className="mb-8 bg-base-200 p-6 rounded-box max-w-lg">
-        <h2 className="text-lg font-bold mb-4">Create New User</h2>
-        {["utorid", "name", "email"].map((field) => (
-          <input
-            key={field}
-            name={field}
-            placeholder={field}
-            className="input input-bordered mb-2 w-full"
-            value={(form as any)[field]}
-            onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-          />
-        ))}
-        <select
-          className="select select-bordered mb-4 w-full"
-          value={form.role}
-          onChange={(e) => setForm({ ...form, role: e.target.value })}
-        >
-          {allowedRoles.map((r) => (
-            <option key={r} value={r}>
-              {r.charAt(0).toUpperCase() + r.slice(1)}
-            </option>
-          ))}
-        </select>
-        <button className="btn btn-primary w-full" onClick={handleCreate}>
+    <div className="drawer drawer-end">
+      <input id="create-user-drawer" type="checkbox" className="drawer-toggle" />
+  
+      <div className="drawer-content p-6">
+        {successMessage && (
+          <div className="alert alert-success shadow-lg mb-4">
+            <span>{successMessage}</span>
+          </div>
+        )}
+  
+        <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold">Users</h1>
+        <label htmlFor="create-user-drawer" className="btn btn-primary">
           Create User
-        </button>
+        </label>
       </div>
-
-      {(isSuperuser || isManager) && (
-        <div className="overflow-x-auto">
-          <table className="table w-full">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>UTORid</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Verified</th>
-                <th>Suspicious</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u) => (
-                <tr key={u.id}>
-                  <td>{u.id}</td>
-                  <td>{u.name}</td>
-                  <td>{u.utorid}</td>
-                  <td>{u.email}</td>
-                  <td>{u.role.charAt(0).toUpperCase() + u.role.slice(1)}</td>
-                  <td>
-                    <span className={`badge ${u.verified ? "badge-success" : "badge-error"}`}>
-                      {u.verified ? "Yes" : "No"}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`badge ${u.suspicious ? "badge-warning" : "badge-neutral"}`}>
-                      {u.suspicious ? "Yes" : "No"}
-                    </span>
-                  </td>
-                  <td className="space-x-2">
-                    <button
-                      className={`btn btn-xs ${u.verified ? "btn-warning" : "btn-success"}`}
-                      onClick={() => handleVerify(u.id, !u.verified)}
-                    >
-                      {u.verified ? "Unverify" : "Verify"}
-                    </button>
-                    <button
-                      className="btn btn-xs btn-info"
-                      disabled={u.role === "superuser"}
-                      onClick={() => handlePromote(u.id, u.role)}
-                    >
-                      Promote
-                    </button>
-                    <button
-                      className="btn btn-xs btn-warning"
-                      disabled={u.role === "regular"}
-                      onClick={() => handleDemote(u.id, u.role)}
-                    >
-                      Demote
-                    </button>
-                    {u.role === "cashier" && (
-                      <button
-                        className={`btn btn-xs ${u.suspicious ? "btn-success" : "btn-error"}`}
-                        onClick={() => handleSuspicious(u.id, !u.suspicious)}
-                      >
-                        {u.suspicious ? "Unmark Suspicious" : "Mark Suspicious"}
-                      </button>
-                    )}
-                  </td>
+  
+        {(isSuperuser || isManager) && (
+          <div className="overflow-x-auto">
+            <table className="table w-full">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>UTORid</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Verified</th>
+                  <th>Suspicious</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id}>
+                    <td>{u.id}</td>
+                    <td>{u.name}</td>
+                    <td>{u.utorid}</td>
+                    <td>{u.email}</td>
+                    <td>{u.role.charAt(0).toUpperCase() + u.role.slice(1)}</td>
+                    <td>
+                      <span className={`badge ${u.verified ? "badge-success" : "badge-error"}`}>
+                        {u.verified ? "Yes" : "No"}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`badge ${u.suspicious ? "badge-warning" : "badge-neutral"}`}>
+                        {u.suspicious ? "Yes" : "No"}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="dropdown dropdown-end">
+                        <label tabIndex={0} className="btn btn-xs btn-outline m-1">Edit</label>
+                        <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 space-y-1">
+                          <li>
+                            <button
+                              onClick={() => handleVerify(u.id, !u.verified)}
+                              className={u.verified ? "text-yellow-600" : "text-green-600"}
+                            >
+                              {u.verified ? "Unverify" : "Verify"}
+                            </button>
+                          </li>
+  
+                          {(isSuperuser || (isManager && u.role === "regular")) && (
+                            <li>
+                              <button onClick={() => handlePromote(u.id, u.role)}>Promote</button>
+                            </li>
+                          )}
+  
+                          {(isSuperuser || (isManager && u.role === "cashier")) && (
+                            <li>
+                              <button onClick={() => handleDemote(u.id, u.role)}>Demote</button>
+                            </li>
+                          )}
+  
+                          {u.role === "cashier" && (
+                            <li>
+                              <button
+                                onClick={() => handleSuspicious(u.id, !u.suspicious)}
+                                className={u.suspicious ? "text-green-600" : "text-red-500"}
+                              >
+                                {u.suspicious ? "Unmark Suspicious" : "Mark Suspicious"}
+                              </button>
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+  
+      {/* Drawer content */}
+      <CreateUserDrawer onSuccess={fetchUsers} />
     </div>
   );
+  
 };
