@@ -41,7 +41,7 @@ export const Users: React.FC = () => {
     if (isSuperuser || isManager) {
       fetchUsers();
     }
-  }, [role]); // ✅ Track role not userInfo!
+  }, [role]);
 
   if (!userInfo || (!isSuperuser && !isManager && !isCashier)) {
     return <div className="p-6 text-xl text-red-600">Access Denied</div>;
@@ -67,7 +67,7 @@ export const Users: React.FC = () => {
     try {
       await api.post("/users", { name, utorid, email, role });
       setForm({ name: "", utorid: "", email: "", role: "regular" });
-      setSuccessMessage("User created ✅");
+      setSuccessMessage("User created");
       
       setTimeout(() => {
         setSuccessMessage(null);
