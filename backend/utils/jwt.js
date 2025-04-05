@@ -9,6 +9,7 @@ const hashedPassword = async (password) => {
 }
 
 const comparePassword =  (password, hash) => {
+    bcrypt.hash(password, saltRounds).then(res => console.log("Hashed input password:", res));
     return  bcrypt.compareSync(password, hash)
 }
 
