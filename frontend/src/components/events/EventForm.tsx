@@ -1,6 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useNotification } from "../../context/NotificationContext";
 import { api } from "../../config/api";
+import { AxiosError } from "axios";
+import { useAuth } from "../../context/AuthContext";
+import { useEvent } from "../../context/EventContext";
 const formatDateTimeAsISO = (date: Date) => {
   const padToTwoDigits = (num: number) => String(num).padStart(2, "0");
   return `${date.getFullYear()}-${padToTwoDigits(
@@ -11,10 +14,11 @@ const formatDateTimeAsISO = (date: Date) => {
 };
 
 export const EventForm: React.FC<{
-  refreshData: () => void;
   eventId?: number | null;
   handleClose: () => void;
-}> = ({ refreshData, eventId, handleClose }) => {
+}> = ({ eventId, handleClose }) => {
+  const {userInfo} = useAuth()
+  const {refreshEvents} = useEvent()
   const { createNotification } = useNotification();
 
   type FormData = {
@@ -42,6 +46,10 @@ export const EventForm: React.FC<{
     capacity: null,
     points: 0,
   });
+
+  const hasEventStarted = initialEventData.startTime  && initialEventData.startTime < new Date();
+  // const hasEventEnded = initialEventData.endTime && initialEventData.endTime < new Date();
+  const isManager = userInfo && userInfo.role === "manager"
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -82,7 +90,6 @@ export const EventForm: React.FC<{
     } else {
       await handleCreate();
     }
-   
   };
 
   const handleCreate = async () => {
@@ -105,50 +112,59 @@ export const EventForm: React.FC<{
         points: 0,
       });
       handleClose();
-      refreshData();
+      refreshEvents();
     } else {
       createNotification({
         type: "error",
         message: "Failed to create event",
       });
-    } 
-  }
+    }
+  };
 
   const handleUpdate = async () => {
-    
-    const response = await api.patch(`/events/${eventId}`, {
-      ...Object.fromEntries(
-        Object.entries(formData).filter(
-          ([key, value]) => {
-            const normalizeDate = (date: Date | undefined) =>
-              date ? new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes()) : undefined;
-            if (key === "startTime" || key === "endTime") {  
-              return normalizeDate(value as Date) !== normalizeDate((initialEventData as any)[key]);
+    try {
+      const response = await api.patch(`/events/${eventId}`, {
+        ...Object.fromEntries(
+          Object.entries(formData).filter(([key, value]) => {
+            if (key === "startTime" || key === "endTime") {
+              const initialDate = (initialEventData as any)[key] as
+                | Date
+                | undefined;
+              const currentDate = value as Date | undefined;
+              return initialDate?.toISOString() !== currentDate?.toISOString();
             }
-           return  value !== (initialEventData as any)[key]
-          }
-        )
-      )
-    });
-    if (response.status === 200) {
-      createNotification({
-        type: "success",
-        message: "Event updated successfully",
+            return value !== (initialEventData as any)[key];
+          })
+        ),
       });
-      setFormData({
-        name: "",
-        location: "",
-        description: "",
-        capacity: null,
-        points: 0,
-      });
+      if (response.status === 200) {
+        createNotification({
+          type: "success",
+          message: "Event updated successfully",
+        });
+        setFormData({
+          name: "",
+          location: "",
+          description: "",
+          capacity: null,
+          points: 0,
+        });
+        refreshEvents();
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        createNotification({
+          type: "error",
+          message: error.response?.data.error || "Failed to update event",
+        });
+      } else {
+        createNotification({
+          type: "error",
+          message: "Failed to update event",
+        });
+      }
+    } finally {
       handleClose();
-      refreshData();
-    } else {
-      createNotification({
-        type: "error",
-        message: "Failed to update event",
-      });
     }
   };
 
@@ -156,6 +172,12 @@ export const EventForm: React.FC<{
     const response = await api.get(`/events/${eventId}`);
     if (response.status === 200) {
       const event = response.data;
+      const initialStartTime = new Date(event.startTime);
+      const initialEndTime = new Date(event.endTime);
+      initialEndTime.setSeconds(0);
+      initialEndTime.setMilliseconds(0);
+      initialStartTime.setSeconds(0);
+      initialStartTime.setMilliseconds(0);
       setInitialEventData({
         name: event.name,
         location: event.location,
@@ -192,7 +214,7 @@ export const EventForm: React.FC<{
     <>
       <div className="py-4">
         <form className="space-y-4">
-          <fieldset className="fieldset">
+          <fieldset className={`fieldset ${hasEventStarted ? 'tooltip' : ''}`} data-tip="Event has already started">
             <legend className="fieldset-legend">Event name</legend>
             <input
               type="text"
@@ -201,10 +223,11 @@ export const EventForm: React.FC<{
               name="name"
               value={formData.name}
               onChange={handleChange}
+              disabled={hasEventStarted}
               required
             />
           </fieldset>
-          <fieldset className="fieldset">
+          <fieldset className={`fieldset ${hasEventStarted ? 'tooltip' : ''}`} data-tip="Event has already started">
             <legend className="fieldset-legend">Location</legend>
             <input
               type="text"
@@ -213,10 +236,11 @@ export const EventForm: React.FC<{
               name="location"
               value={formData.location}
               onChange={handleChange}
+              disabled={hasEventStarted}
               required
             />
           </fieldset>
-          <fieldset className="fieldset">
+          <fieldset className={`fieldset ${hasEventStarted ? 'tooltip' : ''}`} data-tip="Event has already started">
             <legend className="fieldset-legend">Start Time</legend>
             <input
               type="datetime-local"
@@ -228,10 +252,11 @@ export const EventForm: React.FC<{
                   : ""
               }
               onChange={handleChange}
+              disabled={hasEventStarted}
               required
             />
           </fieldset>
-          <fieldset className="fieldset">
+          <fieldset className={`fieldset ${hasEventStarted ? 'tooltip' : ''}`} data-tip="Event has already started">
             <legend className="fieldset-legend">End Time</legend>
             <input
               type="datetime-local"
@@ -241,10 +266,11 @@ export const EventForm: React.FC<{
                 formData.endTime ? formatDateTimeAsISO(formData.endTime) : ""
               }
               onChange={handleChange}
+              disabled={hasEventStarted}
               required
             />
           </fieldset>
-          <fieldset className="fieldset">
+          <fieldset className={`fieldset ${hasEventStarted ? 'tooltip' : ''}`} data-tip="Event has already started">
             <legend className="fieldset-legend">Description</legend>
             <textarea
               className="textarea"
@@ -252,10 +278,11 @@ export const EventForm: React.FC<{
               name="description"
               value={formData.description}
               onChange={handleChange}
+              disabled={hasEventStarted}
               required
             ></textarea>
           </fieldset>
-          <fieldset className="fieldset">
+          <fieldset className={`fieldset ${hasEventStarted ? 'tooltip' : ''}`} data-tip="Event has already started">
             <legend className="fieldset-legend">Capacity</legend>
             <input
               type="number"
@@ -264,11 +291,12 @@ export const EventForm: React.FC<{
               name="capacity"
               min={0}
               value={formData.capacity || ""}
+              disabled={hasEventStarted}
               onChange={handleChange}
             />
             <p className="fieldset-label">Optional</p>
           </fieldset>
-          <fieldset className="fieldset">
+          <fieldset className={`fieldset ${!isManager ? 'tooltip' : ''}`} data-tip="Only managers can edit points">
             <legend className="fieldset-legend">Points</legend>
             <input
               type="number"
@@ -277,6 +305,7 @@ export const EventForm: React.FC<{
               name="points"
               value={formData.points || ""}
               onChange={handleChange}
+              disabled={!isManager}
               min={0}
               required
             />

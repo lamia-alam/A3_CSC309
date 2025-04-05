@@ -1,14 +1,21 @@
 import React from "react";
 import type { ICellRendererParams } from "ag-grid-community";
-import { EventType } from "../../pages/Events";
+import { EventType } from "../../../pages/Events";
+import { useAuth } from "../../../context/AuthContext";
+import { useEvent } from "../../../context/EventContext";
 
-export const EditEventButton: React.FC<{
+export const EditEvent: React.FC<{
   params: ICellRendererParams<EventType>;
-  setSelectEventId: React.Dispatch<React.SetStateAction<number | null>>;
-}> = ({ params, setSelectEventId }) => {
+}> = ({ params }) => {
+  const { userInfo } = useAuth();
+  const { setSelectEventId } = useEvent()
+  const isManager = userInfo?.role === "manager";
+  const currentTime = new Date();
+
   if (
     params.data &&
-    new Date(params.data.endTime) > new Date()
+    new Date(params.data.endTime) > currentTime && 
+    (isManager || new Date(params.data.startTime) > currentTime)
   ) {
     return (
       <label

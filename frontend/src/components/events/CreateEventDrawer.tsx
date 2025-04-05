@@ -1,9 +1,7 @@
 import React, { useRef } from "react";
 import { EventForm } from "./EventForm";
 
-export const CreateEventModal: React.FC<{
-  refreshData: () => void;
-}> = ({ refreshData }) => {
+export const CreateEventDrawer: React.FC = () => {
   const modalCheckboxRef = useRef<HTMLInputElement>(null);
 
   const handleClose = () => {
@@ -28,7 +26,7 @@ export const CreateEventModal: React.FC<{
           <ul className="menu bg-base-200 text-base-content min-h-full w-96 p-4">
             {/* Sidebar content here */}
             <h3 className="font-bold text-lg">Create new event</h3>
-            <EventForm refreshData={refreshData} handleClose={handleClose} />
+            <EventForm handleClose={handleClose} />
           </ul>
         </div>
       </div>

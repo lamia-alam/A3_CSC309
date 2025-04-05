@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useNotification } from "../../context/NotificationContext";
 import { api } from "../../config/api";
 import { EventForm } from "./EventForm";
+import { useEvent } from "../../context/EventContext";
 const formatDateTimeAsISO = (date: Date) => {
   const padToTwoDigits = (num: number) => String(num).padStart(2, "0");
   return `${date.getFullYear()}-${padToTwoDigits(
@@ -12,10 +13,8 @@ const formatDateTimeAsISO = (date: Date) => {
 };
 
 export const EditEventDrawer: React.FC<{
-  refreshData: () => void;
-  eventId: number | null;
-  setSelectEventId: React.Dispatch<React.SetStateAction<number | null>>;
-}> = ({ refreshData, eventId, setSelectEventId }) => {
+}> = () => {
+  const {selectEventId, setSelectEventId} = useEvent()
   const modalCheckboxRef = useRef<HTMLInputElement>(null);
   const { createNotification } = useNotification();
 
@@ -96,9 +95,9 @@ export const EditEventDrawer: React.FC<{
   };
 
   useEffect(() => {
-    if (!eventId) return;
-    fetchEventById(eventId);
-  }, [eventId]);
+    if (!selectEventId) return;
+    fetchEventById(selectEventId);
+  }, [selectEventId]);
 
   return (
     <>
@@ -119,9 +118,8 @@ export const EditEventDrawer: React.FC<{
             {/* Sidebar content here */}
             <h3 className="font-bold text-lg">Edit: {formData.name}</h3>
             <EventForm
-              refreshData={refreshData}
               handleClose={handleClose}
-              eventId={eventId}
+              eventId={selectEventId}
             />
           </ul>
         </div>

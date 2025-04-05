@@ -1,21 +1,22 @@
 import React from "react";
 import type { ICellRendererParams } from "ag-grid-community";
-import { EventType } from "../../pages/Events";
+import { EventType } from "../../../pages/Events";
 import { AxiosError } from "axios";
-import { api } from "../../config/api";
-import { useNotification } from "../../context/NotificationContext";
+import { api } from "../../../config/api";
+import { useNotification } from "../../../context/NotificationContext";
+import { useEvent } from "../../../context/EventContext";
 
 export const RSVPEvent: React.FC<{
   params: ICellRendererParams<EventType>;
-  refreshData: () => void;
-}> = ({ params, refreshData }) => {
+}> = ({ params }) => {
+  const {refreshEvents} = useEvent()
   const { createNotification } = useNotification();
   const rsvpEvent = async (eventId: number) => {
     try {
       const response = await api.post(`/events/${eventId}/guests/me`);
       if (response.status === 201) {
         createNotification({ message: "RSVP successful", type: "success" });
-        refreshData();
+        refreshEvents();
       }
     } catch (error) {
       if (error instanceof AxiosError) {
