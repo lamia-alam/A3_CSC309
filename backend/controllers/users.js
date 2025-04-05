@@ -8,7 +8,7 @@ const {
 } = require("../utils/jwt");
 
 const createUser = async (req, res) => {
-  const { utorid, name, email } = req.body;
+  const { utorid, name, email, role } = req.body;
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@mail\.utoronto\.ca$/;
 
@@ -16,6 +16,7 @@ const createUser = async (req, res) => {
     !utorid ||
     !name ||
     !email ||
+    !role ||
     utorid.length !== 8 ||
     !emailRegex.test(email) ||
     name.length < 1 ||
@@ -24,43 +25,50 @@ const createUser = async (req, res) => {
     return res.status(400).send({ error: "Invalid input" });
   }
 
+  const allowedRoles = ["regular", "cashier", "manager", "superuser"];
+  if (!allowedRoles.includes(role.toLowerCase())) {
+    return res.status(400).json({ error: "Invalid role" });
+  }
+
   try {
     const user = await prisma.user.create({
       data: {
         utorid,
         name,
         email,
+        role: role.toLowerCase(),
       },
     });
+
     const expiry7days = new Date();
     expiry7days.setDate(expiry7days.getDate() + 7);
     expiry7days.setMilliseconds(0);
+
     const resetToken = await prisma.token.create({
       data: {
-        user: {
-          connect: {
-            id: user.id,
-          },
-        },
+        user: { connect: { id: user.id } },
         token: uuid.v4(),
         type: TokenType.RESET_TOKEN,
-        expiresAt: expiry7days, // expires in 7 days
+        expiresAt: expiry7days,
       },
     });
+
     return res.status(201).json({
       id: user.id,
       utorid: user.utorid,
       name: user.name,
       email: user.email,
+      role: user.role,
       verified: user.verified,
       resetToken: resetToken.token,
       expiresAt: resetToken.expiresAt,
     });
   } catch (error) {
+    console.error("Error creating user:", error); // helpful for debugging
     if (error.code === "P2002") {
       return res.status(409).json({ error: "User already exists" });
     }
-    return res.sendStatus(500);
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -115,6 +123,7 @@ const getUsers = async (req, res) => {
         createdAt: user.createdAt,
         lastLogin: user.lastLogin,
         verified: user.verified,
+        suspicious: user.suspicious,
         avatarUrl: user.avatarUrl,
       })),
     });
@@ -283,7 +292,13 @@ const updateCurrentUser = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   const { userId } = req.params;
-  const { email, verified, suspicious, role } = req.body;
+  let { email, verified, suspicious, role } = req.body;
+
+  // 🔧 Handle boolean values safely
+  if (verified === "true") verified = true;
+  if (verified === "false") verified = false;
+  if (suspicious === "true") suspicious = true;
+  if (suspicious === "false") suspicious = false;
 
   if (
     !email &&
@@ -310,10 +325,6 @@ const updateUserById = async (req, res) => {
     return res.status(400).send({ error: "Invalid verified value" });
   }
 
-  if (verified === false) {
-    return res.status(400).send({ error: "You cannot set verified to false" });
-  }
-
   if (
     suspicious !== undefined &&
     suspicious !== null &&
@@ -321,6 +332,9 @@ const updateUserById = async (req, res) => {
   ) {
     return res.status(400).send({ error: "Invalid suspicious value" });
   }
+
+  // ✂️ Removed: you can now unverify users
+  // if (verified === false) { ... }
 
   if (role && !Object.values(Role).includes(role)) {
     return res.status(400).send({ error: "Invalid role value" });
@@ -333,6 +347,7 @@ const updateUserById = async (req, res) => {
 
   const update = {};
   const select = {};
+
   if (email) {
     update.email = email;
     select.email = true;
@@ -342,6 +357,7 @@ const updateUserById = async (req, res) => {
     update.verified = verified;
     select.verified = true;
   }
+
   if (suspicious !== undefined && suspicious !== null) {
     update.suspicious = suspicious;
     select.suspicious = true;
@@ -363,9 +379,7 @@ const updateUserById = async (req, res) => {
 
   try {
     const user = await prisma.user.update({
-      where: {
-        id: userIdInt,
-      },
+      where: { id: userIdInt },
       data: update,
       select: {
         id: true,
@@ -377,6 +391,7 @@ const updateUserById = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (error) {
+    console.error("Update user error:", error);
     return res.sendStatus(500);
   }
 };
