@@ -37,11 +37,11 @@ export const Transactions:React.FC = () => {
   }
 
   const fetchUsers = async () => {
-    return await api.get("/users")
+    return await api.get("/users", {params: {limit: 1000}})
   }
 
   const fetchPromotions = async () => {
-    return await api.get("/promotions")
+    return await api.get("/promotions", {params: {limit: 1000}} )
   }
 
   const processRequest = (transaction: any) => {
@@ -193,8 +193,22 @@ export const Transactions:React.FC = () => {
                               <p>Points Spent: {transaction['spent'] ?? 0}</p>
                               {[...transaction["promotionIds"]]?.length !== 0 ? <p>Promotions Applied:</p> : <br></br>}
                               <div className={"flex gap-1"}>
-                              {[...transaction["promotionIds"]]?.length !== 0 ? [...transaction["promotionIds"]].map(key =>
+
+
+                              {[...transaction["promotionIds"]]?.length !== 0 ?
+                                  [...transaction["promotionIds"]]?.length < 4 ?
+                                  [...transaction["promotionIds"]].map(key =>
                                       <span className="badge badge-xs badge-secondary">{promotionMap.get(key)}</span>) :
+                                      <>
+                                      {[...transaction["promotionIds"]].slice(0, 3).map(key =>
+                                          <span
+                                              className="badge badge-xs badge-secondary">{promotionMap.get(key)}</span>)}
+                                      {console.log(promotionMap)}
+                                        <div className="badge badge-xs bg-gray-100 tooltip tooltip-bottom tooltip-secondary" data-tip={[...transaction["promotionIds"]].slice(3, [...transaction["promotionIds"]].length).map(key => promotionMap.get(key)).toString().replace(",",", ")}>
+                                          <a className="link link-secondary">{`+ ${[...transaction["promotionIds"]].length - 3} more`}</a>
+                                        </div>
+                                      </>
+                                  :
                                   <br></br>}
                               </div>
                               {transaction['type'] === "redemption" ? transaction['processedBy'] == null ?
