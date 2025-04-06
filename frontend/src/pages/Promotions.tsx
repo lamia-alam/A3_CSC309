@@ -215,7 +215,7 @@ export const Promotions:React.FC = () => {
             value={(form as any).points}
             onChange={(e) => setForm({...form, points: Number(e.target.value)})}
         />
-        <button className={"btn btn-primary mt-4"} onClick={submitForm}/>
+        <button className={"btn btn-primary mt-4"} onClick={submitForm}>Submit</button>
       </div>
     </div>
   </div>

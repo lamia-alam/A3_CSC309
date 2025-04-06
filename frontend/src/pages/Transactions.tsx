@@ -324,7 +324,7 @@ export const Transactions:React.FC = () => {
                   placeholder="Promotions"
               />
             </>}
-            <button className={"btn btn-primary mt-4"} onClick={submitForm}/>
+            <button className={"btn btn-primary mt-4"} onClick={submitForm}>Submit</button>
           </div>
         </div>
         <dialog id="my_modal_2" className="modal">
