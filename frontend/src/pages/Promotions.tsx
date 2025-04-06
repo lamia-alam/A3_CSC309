@@ -35,8 +35,13 @@ export const Promotions:React.FC = () => {
           <tr>
             <th></th>
             <th>Name</th>
-            <th>Job</th>
-            <th>Favorite Color</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Min Spending</th>
+            <th>Rate</th>
+            <th>Points</th>
           </tr>
           </thead>
           <tbody>
