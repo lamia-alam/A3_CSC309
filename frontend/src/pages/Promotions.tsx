@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {api} from "../config/api.ts";
 import {AuthContext} from "../context/AuthContext.tsx";
+import PromotionFilters from "../components/PromotionFilters.tsx";
 
 export const Promotions:React.FC = () => {
   const [promos, setPromos] = useState([])
@@ -13,7 +14,13 @@ export const Promotions:React.FC = () => {
   const {role} = useContext(AuthContext)
   const [form, setForm] = useState({name: "", description: "", type: "", startTime: "", endTime: "", minSpending: 0, rate: 0, points: 0})
 
-  const fetchPromotions = async (filters: Object) => {
+  const fetchPromotions = async (filters: any) => {
+    if (filters["started"] === false) {
+      delete filters["started"]
+    }
+    if (filters["ended"] === false) {
+      delete filters["ended"]
+    }
     return await api.get("/promotions", {params: filters})
   }
 
@@ -114,6 +121,7 @@ export const Promotions:React.FC = () => {
                   Create Promotion
                 </label>}
           </div>
+          <PromotionFilters onFilterChange={setFilters}/>
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
