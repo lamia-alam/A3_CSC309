@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { api } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 import { CreateUserDrawer } from "../components/CreateUserDrawer";
+import { debounce } from 'lodash';
 
 type User = {
   id: number;
@@ -26,6 +27,7 @@ export const Users: React.FC = () => {
     direction: "ascending", // Default sort direction
   });
   const [filters, setFilters] = useState({
+    id: "",
     name: "",
     utorid: "",
     email: "",
@@ -45,6 +47,14 @@ export const Users: React.FC = () => {
     : isManager
     ? ["cashier", "regular"]
     : ["regular"];
+
+  const debouncedSetFilters = debounce((column: keyof typeof filters, value: string) => {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        [column]: value,
+      }));
+    }, 300); // Adjust debounce delay (300ms) as needed
+    
 
   const fetchUsers = async () => {
     try {
@@ -71,14 +81,15 @@ export const Users: React.FC = () => {
 
   const filteredUsers = users.filter((user) => {
     return (
-      (filters.name === "" || user.name.toLowerCase().includes(filters.name.toLowerCase())) &&
+      (filters.id === "" || user.id.toString().includes(filters.id)) &&
+      (filters.name === "" || (user.name?.toLowerCase() ?? "").includes(filters.name.toLowerCase())) &&
       (filters.utorid === "" || user.utorid.toLowerCase().includes(filters.utorid.toLowerCase())) &&
       (filters.email === "" || user.email.toLowerCase().includes(filters.email.toLowerCase())) &&
       (filters.role === "" || user.role.toLowerCase().includes(filters.role.toLowerCase())) &&
       (filters.verified === "" || user.verified.toString() === filters.verified) &&
       (filters.suspicious === "" || user.suspicious.toString() === filters.suspicious)
     );
-  });
+  });  
   
   // Sorting after filtering
   const sortedUsers = filteredUsers.sort((a, b) => {
@@ -211,15 +222,15 @@ export const Users: React.FC = () => {
             <thead>
               <tr>
                 {["id", "name", "utorid", "email", "role", "verified", "suspicious"].map((column) => (
-                  <th key={column} onClick={() => handleSort(column as keyof User)} className="cursor-pointer">
-                    <div className="flex items-center">
-                      <span>
+                  <th key={column} className="cursor-pointer">
+                    <div className="flex flex-col items-center">
+                      <span onClick={() => handleSort(column as keyof User)}>
                         {column.charAt(0).toUpperCase() + column.slice(1)}{" "}
                         {sortConfig.key === column && (sortConfig.direction === "ascending" ? "↑" : "↓")}
                       </span>
                       {column === "verified" || column === "suspicious" ? (
                         <select
-                          className="select select-sm w-32"
+                          className="select select-sm w-32 mt-1"
                           value={filters[column as keyof typeof filters]}
                           onChange={(e) => setFilters({ ...filters, [column]: e.target.value })}
                         >
@@ -230,7 +241,7 @@ export const Users: React.FC = () => {
                       ) : (
                         <input
                           type="text"
-                          className="input input-sm w-32"
+                          className="input input-sm w-32 mt-1"
                           placeholder={`Filter ${column}`}
                           value={filters[column as keyof typeof filters]}
                           onChange={(e) => setFilters({ ...filters, [column]: e.target.value })}
