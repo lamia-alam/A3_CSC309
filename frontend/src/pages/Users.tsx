@@ -18,6 +18,13 @@ export const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [form, setForm] = useState({ name: "", utorid: "", email: "", role: "regular" });
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof User;
+    direction: "ascending" | "descending";
+  }>({
+    key: "id", // Default sort key
+    direction: "ascending", // Default sort direction
+  });
 
   const isSuperuser = role === "superuser";
   const isManager = role === "manager";
@@ -44,6 +51,24 @@ export const Users: React.FC = () => {
     }
   }, [role]);
 
+  const handleSort = (key: keyof User) => {
+    let direction: "ascending" | "descending" = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedUsers = [...users].sort((a, b) => {
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === "ascending" ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === "ascending" ? 1 : -1;
+    }
+    return 0;
+  });
+
   if (!userInfo || (!isSuperuser && !isManager && !isCashier)) {
     return <div className="p-6 text-xl text-red-600">Access Denied</div>;
   }
@@ -69,14 +94,14 @@ export const Users: React.FC = () => {
       await api.post("/users", { name, utorid, email, role });
       setForm({ name: "", utorid: "", email: "", role: "regular" });
       setSuccessMessage("User created");
-      
+
       setTimeout(() => {
         setSuccessMessage(null);
       }, 3000);
-      
+
       if (isSuperuser || isManager) {
         fetchUsers(); // Only refetch list if you're allowed to see it
-      }      
+      }
     } catch (err: any) {
       const message =
         err?.response?.data?.error || "An error occurred while creating the user.";
@@ -106,13 +131,13 @@ export const Users: React.FC = () => {
     const order = ["regular", "cashier", "manager", "superuser"];
     const idx = order.indexOf(currentRole);
     const nextRole = order[idx + 1];
-  
+
     // Restrict manager from promoting managers or higher
     if (isManager && (currentRole === "manager" || currentRole === "superuser")) {
       alert("Managers cannot promote other managers or superusers.");
       return;
     }
-  
+
     if (idx < order.length - 1) {
       try {
         await api.patch(`/users/${id}`, { role: nextRole });
@@ -121,19 +146,19 @@ export const Users: React.FC = () => {
         console.error("Failed to promote user", err);
       }
     }
-  };  
+  };
 
   const handleDemote = async (id: number, currentRole: string) => {
     const order = ["regular", "cashier", "manager", "superuser"];
     const idx = order.indexOf(currentRole);
     const prevRole = order[idx - 1];
-  
+
     // Restrict manager from demoting managers or superusers
     if (isManager && (currentRole === "manager" || currentRole === "superuser")) {
       alert("Managers cannot demote other managers or superusers.");
       return;
     }
-  
+
     if (idx > 0) {
       try {
         await api.patch(`/users/${id}`, { role: prevRole });
@@ -142,43 +167,46 @@ export const Users: React.FC = () => {
         console.error("Failed to demote user", err);
       }
     }
-  };  
+  };
 
   return (
     <div className="drawer drawer-end">
       <input id="create-user-drawer" type="checkbox" className="drawer-toggle" />
-  
+
       <div className="drawer-content p-6">
         {successMessage && (
           <div className="alert alert-success shadow-lg mb-4">
             <span>{successMessage}</span>
           </div>
         )}
-  
+
         <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Users</h1>
-        <label htmlFor="create-user-drawer" className="btn btn-primary">
-          Create User
-        </label>
-      </div>
-  
+          <h1 className="text-2xl font-semibold">Users</h1>
+          <label htmlFor="create-user-drawer" className="btn btn-primary">
+            Create User
+          </label>
+        </div>
+
         {(isSuperuser || isManager) && (
           <div className="overflow-x-auto">
             <table className="table w-full">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>UTORid</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Verified</th>
-                  <th>Suspicious</th>
+                  {["id", "name", "utorid", "email", "role", "verified", "suspicious"].map((column) => (
+                    <th
+                      key={column}
+                      onClick={() => handleSort(column as keyof User)}
+                      className="cursor-pointer"
+                    >
+                      {column.charAt(0).toUpperCase() + column.slice(1)}{" "}
+                      {sortConfig.key === column && (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                    </th>
+                  ))}
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {users.map((u) => (
+                {sortedUsers.map((u) => (
                   <tr key={u.id}>
                     <td>{u.id}</td>
                     <td>{u.name}</td>
@@ -197,7 +225,9 @@ export const Users: React.FC = () => {
                     </td>
                     <td>
                       <div className="dropdown dropdown-end">
-                        <label tabIndex={0} className="btn btn-xs btn-outline m-1">Edit</label>
+                        <label tabIndex={0} className="btn btn-xs btn-outline m-1">
+                          Edit
+                        </label>
                         <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 space-y-1">
                           <li>
                             <button
@@ -207,19 +237,19 @@ export const Users: React.FC = () => {
                               {u.verified ? "Unverify" : "Verify"}
                             </button>
                           </li>
-  
+
                           {(isSuperuser || (isManager && u.role === "regular")) && (
                             <li>
                               <button onClick={() => handlePromote(u.id, u.role)}>Promote</button>
                             </li>
                           )}
-  
+
                           {(isSuperuser || (isManager && u.role === "cashier")) && (
                             <li>
                               <button onClick={() => handleDemote(u.id, u.role)}>Demote</button>
                             </li>
                           )}
-  
+
                           {u.role === "cashier" && (
                             <li>
                               <button
@@ -240,10 +270,9 @@ export const Users: React.FC = () => {
           </div>
         )}
       </div>
-  
+
       {/* Drawer content */}
       <CreateUserDrawer onSuccess={fetchUsers} />
     </div>
   );
-  
 };
