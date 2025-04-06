@@ -2,15 +2,13 @@ import React, { useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import type {
   ColDef,
-  ICellRendererParams,
   SizeColumnsToContentStrategy,
   SizeColumnsToFitGridStrategy,
   SizeColumnsToFitProvidedWidthStrategy,
 } from "ag-grid-community";
 import { useAuth } from "../../context/AuthContext";
-import { EventActionsWrapper } from "../../components/events/event-actions/EventActionsWrapper";
 import { useEvent } from "../../context/EventContext";
-import { Link } from "react-router-dom";
+import { defaultColDef, getEventColDefs } from "./eventTableUtils";
 
 export type EventType = {
   id: number;
@@ -38,78 +36,9 @@ export const EventTable: React.FC = () => {
   } = useEvent();
 
 
-  const [colDefs] = useState<ColDef<EventType>[]>([
-    {
-      headerName: "Name",
-      lockPinned: true,
-      pinned: true,
-      cellRenderer: (params: ICellRendererParams) => {
-        return (
-          <div className="flex items-center">
-            <Link to={`/events/${params.data.id}`}>
-              {params.data.name}
-            </Link>
-            {params.data.published && (
-              <span className="badge badge-sm badge-success ml-2"></span>
-            )}
-          </div>
-        );
-      },
-    },
-    { field: "location", headerName: "Location", width: 150 },
-    { field: "description", headerName: "Description", minWidth: 200 },
-    { field: "numGuests", headerName: "# Guests", width: 150 },
-    {
-      field: "startTime",
-      headerName: "Start Time",
-      minWidth: 180,
-      valueFormatter: (params) => {
-        const date = new Date(params.value);
-        return date.toLocaleString();
-      },
-    },
-    {
-      field: "endTime",
-      headerName: "End Time",
-      minWidth: 180,
-      valueFormatter: (params) => {
-        const date = new Date(params.value);
-        return date.toLocaleString();
-      },
-    },
-    {
-      headerName: "Points awarded",
-      field: "pointsAwarded",
-      minWidth: 100,
-    },
-    {
-      headerName: "Points remaining",
-      field: "pointsRemain",
-      minWidth: 100,
-      hide: userInfo?.role === "regular" || userInfo?.role === "cashier",
-    },
-    { field: "capacity", headerName: "Capacity", width: 150 },
-    {
-      headerName: "Action",
-      pinned: "right",
-      resizable: true,
-      cellRenderer: (params: ICellRendererParams) => (
-        <EventActionsWrapper
-          params={params}
-        />
-      ),
-    },
-  ]);
+  const [colDefs] = useState<ColDef<EventType>[]>(getEventColDefs(userInfo));
 
-  const defaultColDef = useMemo<ColDef>(() => {
-    return {
-      // sortable: true,
-      // filter: true,
-      resizable: false,
-      // flex: 1,
-      minWidth: 100,
-    };
-  }, []);
+ 
 
   const autoSizeStrategy = useMemo<
     | SizeColumnsToFitGridStrategy

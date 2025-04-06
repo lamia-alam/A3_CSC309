@@ -7,7 +7,7 @@ import {
 } from "react";
 import { api } from "../config/api";
 
-type UserInfo = {
+export type UserInfo = {
   id: string;
   utorid: string;
   birthday: string;

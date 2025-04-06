@@ -37,6 +37,7 @@ export enum Pages {
   // A page that allows managers to view/edit/delete a specific promotion.
 
   EVENTS = "/events",
+  MYEVENTS = "/my-events", // table that shows all events that the user is an organizer for
   EVENTBYID = "/events/:id",
   // Regular User
   // A page that displays all published events.

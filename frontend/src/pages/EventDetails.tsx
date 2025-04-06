@@ -3,8 +3,9 @@ import { EventType } from "../components/events/EventTable";
 import { User } from "./Users";
 import { EventGuests } from "../components/events/EventGuests";
 import { EventOrganizers } from "../components/events/EventOrganizers";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { api } from "../config/api";
+import { Pages } from "../constants/pages";
 
 type UserType = Pick<User, "id" | "name" | "utorid">;
 
@@ -40,8 +41,24 @@ export const EventDetails: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
-    
-      <div className="card bg-base-100 shadow-sm">
+      <Link to={Pages.EVENTS} className="btn btn-link justify-start">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="size-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
+        </svg>
+        Back to events
+      </Link>
+      <div className="card bg-base-200 shadow-lg">
         <div className="card-body">
           {eventDetails.published ? (
             <span className="badge badge-success">Published</span>
@@ -62,7 +79,11 @@ export const EventDetails: React.FC = () => {
               <span>Location: {eventDetails.location}</span>
             </li>
             <li>
-              <>Live between: {new Date(eventDetails.startTime).toLocaleString()} - {new Date(eventDetails.endTime).toLocaleString()}</>
+              <>
+                Live between:{" "}
+                {new Date(eventDetails.startTime).toLocaleString()} -{" "}
+                {new Date(eventDetails.endTime).toLocaleString()}
+              </>
             </li>
           </ul>
         </div>

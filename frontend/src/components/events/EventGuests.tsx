@@ -144,7 +144,7 @@ export const EventGuests: React.FC<{
         </div>
       </dialog>
 
-      <ul className="list bg-base-100 rounded-box shadow-md">
+      <ul className="list bg-base-200 rounded-box shadow-md">
         <li className="p-4 pb-2 tracking-wide flex justify-between items-center">
           <p className="text-lg">Guests</p>
           <button

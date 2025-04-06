@@ -26,7 +26,7 @@ const EventContext = createContext<EventContextType>({
     setSelectEventId: () => {},
 });
 
-export const EventProvider: React.FC<PropsWithChildren> = ({ children }) => {
+export const MyEventProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [events, setEvents] = useState<EventType[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -34,7 +34,7 @@ export const EventProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [selectEventId, setSelectEventId] = useState<number | null>(null);
 
   const refreshEvents = async () => {
-    const response = await api.get("/events", {
+    const response = await api.get("/events/me", {
       params: {
         page,
         limit: pageSize,
@@ -44,7 +44,6 @@ export const EventProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setTotalItems(response.data.count);
   };
 
- 
 
   const pageCount = useMemo(() => {
     return Math.ceil(totalItems / pageSize);
@@ -71,4 +70,4 @@ export const EventProvider: React.FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-export const useEvent = () => useContext(EventContext)
+export const useMyEvent = () => useContext(EventContext)

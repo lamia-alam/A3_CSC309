@@ -16,6 +16,7 @@ import {
   UnauthenticatedRoutes,
 } from "./components/ProtectedRoutes";
 import { EventDetails } from "./pages/EventDetails";
+import { MyEvents } from "./pages/MyEvents";
 
 function App() {
   
@@ -26,6 +27,7 @@ function App() {
           <Route path={Pages.HOME} element={<Home />} />
           <Route path={Pages.ACCOUNT} element={<Account />} />
           <Route path={Pages.EVENTS} element={<Events />} />
+          <Route path={Pages.MYEVENTS} element={<MyEvents />} />
           <Route path={Pages.EVENTBYID} element={<EventDetails />} />
           <Route path={Pages.PROMOTIONS} element={<Promotions />} />
           <Route path={Pages.TRANSACTIONS} element={<Transactions />} />
