@@ -1,4 +1,5 @@
-import { useState } from "react";
+import {useContext, useState} from "react";
+import {AuthContext} from "../context/AuthContext.tsx";
 
 type FiltersProps = {
     onFilterChange: (filters: FiltersState) => void;
@@ -16,6 +17,7 @@ export type FiltersState = {
 };
 
 const TransactionFilters: React.FC<FiltersProps> = ({ onFilterChange }) => {
+    const {role} = useContext(AuthContext)
     const [filters, setFilters] = useState<FiltersState>({
         name: "",
         createdBy: "",
@@ -26,6 +28,7 @@ const TransactionFilters: React.FC<FiltersProps> = ({ onFilterChange }) => {
         amount: "",
         operator: "gte",
     });
+    const inPower = role !== null && ["superuser", "manager"].includes(role)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -39,7 +42,7 @@ const TransactionFilters: React.FC<FiltersProps> = ({ onFilterChange }) => {
         <div className="p-3">
             <h2 className="text-lg font-semibold mb-4">Filters</h2>
             <div className="grid grid-cols-1 gap-3">
-                <input
+                {inPower && <><input
                     type="text"
                     name="name"
                     placeholder="Name"
@@ -65,6 +68,7 @@ const TransactionFilters: React.FC<FiltersProps> = ({ onFilterChange }) => {
                     <option value="true">True</option>
                     <option value="false">False</option>
                 </select>
+                </>}
                 <input
                     type="number"
                     name="promotionId"
@@ -73,14 +77,6 @@ const TransactionFilters: React.FC<FiltersProps> = ({ onFilterChange }) => {
                     onChange={handleChange}
                     className="p-2 border rounded w-full"
                 />
-                {/*<input*/}
-                {/*    type="text"*/}
-                {/*    name="type"*/}
-                {/*    placeholder="Type"*/}
-                {/*    value={filters.type}*/}
-                {/*    onChange={handleChange}*/}
-                {/*    className="p-2 border rounded w-full"*/}
-                {/*/>*/}
                 <select
                     name="type"
                     value={filters.type}
@@ -94,14 +90,14 @@ const TransactionFilters: React.FC<FiltersProps> = ({ onFilterChange }) => {
                     <option value="transfer">Transfer</option>
                     <option value="redemption">Redemption</option>
                 </select>
-                <input
+                {inPower && <input
                     type="number"
                     name="relatedId"
                     placeholder="Related ID"
                     value={filters.relatedId}
                     onChange={handleChange}
                     className="p-2 border rounded w-full"
-                />
+                />}
                 <input
                     type="number"
                     name="amount"
