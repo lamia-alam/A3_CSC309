@@ -44,7 +44,7 @@ export const Promotions:React.FC = () => {
     payload.minSpending = form.minSpending
     payload.rate = form.rate
     payload.points = form.points
-    let url = ""
+    let url;
     if (promoToEdit === -1) {
       url = "/promotions"
       api.post(url, payload).then(() => {

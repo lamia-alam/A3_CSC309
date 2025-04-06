@@ -112,8 +112,8 @@ export const Transactions:React.FC = () => {
   }, []);
 
   const submitForm = () => {
-    var payload = {} as any
-    var url = ""
+    let payload = {} as any
+    let url = ""
     switch (form.type) {
       case "purchase":
         payload.utorid = form.utorid;
@@ -203,7 +203,6 @@ export const Transactions:React.FC = () => {
                                       {[...transaction["promotionIds"]].slice(0, 3).map(key =>
                                           <span
                                               className="badge badge-xs badge-secondary">{promotionMap.get(key)}</span>)}
-                                      {console.log(promotionMap)}
                                         <div className="badge badge-xs bg-gray-100 tooltip tooltip-bottom tooltip-secondary" data-tip={[...transaction["promotionIds"]].slice(3, [...transaction["promotionIds"]].length).map(key => promotionMap.get(key)).toString().replace(",",", ")}>
                                           <a className="link link-secondary">{`+ ${[...transaction["promotionIds"]].length - 3} more`}</a>
                                         </div>
