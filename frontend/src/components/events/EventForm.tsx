@@ -296,7 +296,7 @@ export const EventForm: React.FC<{
             />
             <p className="fieldset-label">Optional</p>
           </fieldset>
-          <fieldset className={`fieldset ${!isManager ? 'tooltip' : ''}`} data-tip="Only managers can edit points">
+          <fieldset className={`fieldset ${!isManager && eventId ? 'tooltip' : ''}`} data-tip="Only managers can edit points">
             <legend className="fieldset-legend">Points</legend>
             <input
               type="number"
@@ -305,7 +305,7 @@ export const EventForm: React.FC<{
               name="points"
               value={formData.points || ""}
               onChange={handleChange}
-              disabled={!isManager}
+              disabled={!isManager && !!eventId}
               min={0}
               required
             />

@@ -292,6 +292,7 @@ const getEvents = async (req, res) => {
         .map((event) => ({
           id: event.id,
           name: event.name,
+          description: event.description,
           location: event.location,
           startTime: event.startTime,
           endTime: event.endTime,

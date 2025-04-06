@@ -1,8 +1,8 @@
 import React from "react";
 import type { ICellRendererParams } from "ag-grid-community";
-import { EventType } from "../../../pages/Events";
 import { useAuth } from "../../../context/AuthContext";
 import { useEvent } from "../../../context/EventContext";
+import { EventType } from "../EventTable";
 
 export const EditEvent: React.FC<{
   params: ICellRendererParams<EventType>;

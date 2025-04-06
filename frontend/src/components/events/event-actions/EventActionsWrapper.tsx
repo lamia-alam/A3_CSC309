@@ -1,10 +1,12 @@
 import React, { PropsWithChildren } from "react";
 import type { ICellRendererParams } from "ag-grid-community";
-import { EventType } from "../../../pages/Events";
 import { RSVPEvent } from "./RSVP";
 import { PublishEvent } from "./Publish";
 import { useAuth } from "../../../context/AuthContext";
 import { EditEvent } from "./Edit";
+import { DeleteEvent } from "./Delete";
+import { AssignOrganizer } from "./AssignOrganizer";
+import { EventType } from "../EventTable";
 
 export const EventActionsWrapper: React.FC<
   PropsWithChildren<{
@@ -23,7 +25,11 @@ export const EventActionsWrapper: React.FC<
         <PublishEvent params={params}  />
       )}
       {["manager", "superuser"].includes(userInfo.role) && (
-        <EditEvent params={params} />
+        <>
+        <EditEvent params={params} />  {/* organizer can edit their own events */}
+        <DeleteEvent params={params} />
+        <AssignOrganizer params={params} />
+        </>
       )}
     </div>
   );

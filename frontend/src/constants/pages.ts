@@ -44,7 +44,7 @@ export enum Pages {
   // Manager
   // A page that allows managers to create new events.
   // A page that displays all events (with filters, // only do this if asked by prof --> order-by, and pagination).
-  // A page that allows managers to view/edit/delete a specific event.
+  // A page that allows managers to view/edit/delete a specific event. 
   // A page that allows managers to add or remove users from an event.
   // Manager + Organizer
   // A page that displays the events that the user is responsible for.
@@ -52,6 +52,8 @@ export enum Pages {
   // A page that allows adding a user to the event that he/she is responsible for.
   // A page that allows awarding points to a single guest, or to all guests who have RSVPed
 
+  //filters, potentially adding/removing users from an event today 
+  //fix seed.js -->last prio  
   HOME = "/",
   LOGIN = "/login",
 }

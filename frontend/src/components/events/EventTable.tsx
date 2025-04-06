@@ -8,15 +8,14 @@ import type {
   SizeColumnsToFitProvidedWidthStrategy,
 } from "ag-grid-community";
 import { useAuth } from "../../context/AuthContext";
-import { EditEventDrawer } from "../../components/events/EditEventDrawer";
 import { EventActionsWrapper } from "../../components/events/event-actions/EventActionsWrapper";
-import { CreateEventDrawer } from "../../components/events/CreateEventDrawer";
 import { useEvent } from "../../context/EventContext";
 
 export type EventType = {
   id: number;
   name: string;
   location: string;
+  description: string;
   startTime: string;
   endTime: string;
   numGuests: number;
@@ -30,7 +29,6 @@ export const EventTable: React.FC = () => {
   const { userInfo } = useAuth();
   const {
     events,
-    refreshEvents: fetchEvents,
     pageSize,
     page,
     pageCount,
@@ -38,7 +36,6 @@ export const EventTable: React.FC = () => {
     handlePageChange,
   } = useEvent();
 
-  const [selectEventId, setSelectEventId] = useState<number | null>(null);
 
   const [colDefs] = useState<ColDef<EventType>[]>([
     {
@@ -48,7 +45,7 @@ export const EventTable: React.FC = () => {
       cellRenderer: (params: ICellRendererParams) => {
         return (
           <div className="flex items-center">
-            <span onClick={() => setSelectEventId(params.data.id)}>
+            <span>
               {params.data.name}
             </span>
             {params.data.published && (
@@ -59,6 +56,7 @@ export const EventTable: React.FC = () => {
       },
     },
     { field: "location", headerName: "Location", width: 150 },
+    { field: "description", headerName: "Description", minWidth: 200 },
     { field: "numGuests", headerName: "# Guests", width: 150 },
     {
       field: "startTime",
@@ -93,6 +91,7 @@ export const EventTable: React.FC = () => {
     {
       headerName: "Action",
       pinned: "right",
+      resizable: true,
       cellRenderer: (params: ICellRendererParams) => (
         <EventActionsWrapper
           params={params}
@@ -132,6 +131,7 @@ export const EventTable: React.FC = () => {
           headerHeight={40}
           domLayout="autoHeight"
           defaultColDef={defaultColDef}
+          cellSelection={false}
         />
       </div>
       <div className="flex justify-between items-center mt-4">
