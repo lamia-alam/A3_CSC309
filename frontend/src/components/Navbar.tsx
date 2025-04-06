@@ -55,7 +55,7 @@ export const Navbar: React.FC = () => {
           </ul>
         </div>
         <Link to={Pages.HOME} className="btn btn-ghost text-xl">
-          daisyUI
+          LoyalT++
         </Link>
       </div>
 
