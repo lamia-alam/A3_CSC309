@@ -5,16 +5,21 @@ import {AuthContext} from "../context/AuthContext.tsx";
 export const Promotions:React.FC = () => {
   const [promos, setPromos] = useState([])
   const [promoToEdit, setPromoToEdit] = useState(-1)
+  const [page, setPage] = useState(1)
+  const [maxPage, setMaxPage] = useState(1)
+  const [filters, setFilters] = useState({} as any)
+  // const [promoToDelete, setPromoToDelete] = useState(-1)
   const {role} = useContext(AuthContext)
   const [form, setForm] = useState({name: "", description: "", type: "", startTime: "", endTime: "", minSpending: 0, rate: 0, points: 0})
 
-  const fetchPromotions = async () => {
-    return await api.get("/promotions")
+  const fetchPromotions = async (filters: Object) => {
+    return await api.get("/promotions", {params: filters})
   }
 
   const getPromotions = () => {
-    fetchPromotions().then(res => {
+    fetchPromotions({...filters, page: page, limit: 10}).then(res => {
       setPromos(res?.data.results)
+      setMaxPage(Math.ceil(res?.data.count/10))
     })
   }
 
@@ -61,20 +66,30 @@ export const Promotions:React.FC = () => {
 
   useEffect(() => {
     getPromotions()
-  }, []);
+  }, [filters, page]);
 
   return (
   <div className="drawer drawer-end">
     <input id="my-drawer-4" type="checkbox" className="drawer-toggle"/>
-    <div className="drawer-content">
+    <div className="drawer-content flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Promotions</h1>
-        {role !== null && ["manager", "superuser"].includes(role) && <label htmlFor="my-drawer-4" className="btn btn-primary" onClick={() => {
-          setPromoToEdit(-1)
-          setForm({name: "", description: "", type: "", startTime: "", endTime: "",  minSpending: 0, rate: 0, points: 0})
-        }}>
-          Create Promotion
-        </label>}
+        {role !== null && ["manager", "superuser"].includes(role) &&
+            <label htmlFor="my-drawer-4" className="btn btn-primary" onClick={() => {
+              setPromoToEdit(-1)
+              setForm({
+                name: "",
+                description: "",
+                type: "",
+                startTime: "",
+                endTime: "",
+                minSpending: 0,
+                rate: 0,
+                points: 0
+              })
+            }}>
+              Create Promotion
+            </label>}
       </div>
       <div className="overflow-x-auto">
         <table className="table">
@@ -102,29 +117,39 @@ export const Promotions:React.FC = () => {
             <td>{new Date(promo['startTime']).toUTCString()}</td>
             <td>{new Date(promo['endTime']).toUTCString()}</td>
             <td>{promo['minSpending']}</td>
-            <td>{Math.round(Number(promo['rate'])*100)/100}</td>
+            <td>{Math.round(Number(promo['rate']) * 100) / 100}</td>
             <td>{promo['points']}</td>
-            <td>{role !== null && ["manager", "superuser"].includes(role) && <a className={"link link-primary hover:link-secondary"} onClick={() => {
-              setPromoToEdit(promo['id'])
-              setForm({
-                name: promo['name'],
-                description: promo['description'],
-                type: promo['type'],
-                startTime: String(promo['startTime']).replace("T", " ").replace("Z", ""),
-                endTime: String(promo['endTime']).replace("T", " ").replace("Z", ""),
-                minSpending: promo['minSpending'],
-                rate: promo['rate'],
-                points: promo['points']
-              })
-              const checkbox = document.getElementById(
-                  "my-drawer-4"
-              ) as HTMLInputElement;
-              if (checkbox) checkbox.checked = true;
-            }}>Edit</a>}</td>
-            <td>{role !== null && ["manager", "superuser"].includes(role) &&<a className={"link link-primary"}>Delete</a>}</td>
+            <td>{role !== null && ["manager", "superuser"].includes(role) &&
+                <a className={"link link-primary hover:link-secondary"} onClick={() => {
+                  setPromoToEdit(promo['id'])
+                  setForm({
+                    name: promo['name'],
+                    description: promo['description'],
+                    type: promo['type'],
+                    startTime: String(promo['startTime']).replace("T", " ").replace("Z", ""),
+                    endTime: String(promo['endTime']).replace("T", " ").replace("Z", ""),
+                    minSpending: promo['minSpending'],
+                    rate: promo['rate'],
+                    points: promo['points']
+                  })
+                  const checkbox = document.getElementById(
+                      "my-drawer-4"
+                  ) as HTMLInputElement;
+                  if (checkbox) checkbox.checked = true;
+                }}>Edit</a>}</td>
+            <td>{role !== null && ["manager", "superuser"].includes(role) &&
+                <a className={"link link-primary"}>Delete</a>}</td>
           </tr>))}
           </tbody>
         </table>
+      </div>
+      <div className="join flex flex-row justify-end p-3">
+        <button className="join-item btn btn-outline w-30" onClick={() => setPage(page - 1)}
+                disabled={page === 1}>Previous
+        </button>
+        <button className="join-item btn btn-outline w-30" onClick={() => setPage(page + 1)}
+                disabled={page === maxPage}>Next
+        </button>
       </div>
     </div>
     <div className="drawer-side">
