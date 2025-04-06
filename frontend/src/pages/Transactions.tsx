@@ -196,7 +196,7 @@ export const Transactions:React.FC = () => {
                                       <span className="badge badge-xs badge-secondary">{promotionMap.get(key)}</span>) :
                                   <br></br>}
                               {transaction['type'] === "redemption" ? transaction['processedBy'] == null ?
-                                      <a className={"link link-primary"}
+                                      <a className={"link link-primary hover:link-secondary"}
                                          onClick={() => processRequest(transaction)}>{role !== "regular" ? "Process Redemption" : "View QR Code"}</a> :
                                       <p>Processed By: {userMap.get(transaction['processedBy'])}</p> :
                                   <br></br>}
