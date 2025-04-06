@@ -162,11 +162,16 @@ export const Transactions:React.FC = () => {
       <div className="drawer drawer-end">
         <input id="my-drawer" type="checkbox" className="drawer-toggle"/>
         <div className="drawer-content">
+          <div className="flex justify-between items-center mb-3">
+            <h1 className="text-2xl font-semibold">Transactions</h1>
+            <label htmlFor="my-drawer" className="btn btn-primary">
+              Create Transaction
+            </label>
+          </div>
           <div>
             <div className={"grid grid-cols-5"}>
               <TransactionFilters onFilterChange={filters => setFilters(filters)}/>
               <div className={"col-span-4 flex flex-col items-end"}>
-                <label htmlFor="my-drawer" className="btn btn-primary drawer-button">Create Transaction</label>
                 <div className="grid grid-cols-3 gap-3 auto-rows-min p-3 self-stretch ">
                   {trans.map(transaction => {
                     return (
