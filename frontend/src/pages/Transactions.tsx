@@ -126,8 +126,7 @@ export const Transactions:React.FC = () => {
         url = "/transactions"
         break
     }
-    api.post(url, payload).then(res => {
-      if (res.status === 201) {
+    api.post(url, payload).then(() => {
         alert("Transaction created successfully.");
         setForm({ type: "", spent: 0, amount: 0, remark: "", relatedId: "", utorid: "", promotionIds: [] as string[] })
         getTransactions()
@@ -135,9 +134,8 @@ export const Transactions:React.FC = () => {
             "my-drawer"
         ) as HTMLInputElement;
         if (checkbox) checkbox.checked = false;
-      } else {
-        alert("Transaction not created.");
-      }
+    }).catch(res => {
+      alert(`Transaction not created: ${res.response.data.error}.`);
     })
   }
 
