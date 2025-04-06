@@ -312,6 +312,7 @@ const getTransactions = async (req, res) => {
         Promotions: {
           select: {
             id: true,
+            promotionId: true,
           },
         },
         suspicious: true,
@@ -334,7 +335,7 @@ const getTransactions = async (req, res) => {
         amount: transaction.points,
         type: transaction.type,
         spent: transaction.spent,
-        promotionIds: transaction.Promotions.map((promotion) => promotion.id),
+        promotionIds: transaction.Promotions.map((promotion) => promotion.promotionId),
         suspicious: transaction.suspicious,
         remark: transaction.remark ?? "",
         createdBy: transaction.createdByUser?.utorid,

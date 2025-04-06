@@ -192,9 +192,11 @@ export const Transactions:React.FC = () => {
                               <p>Points Awarded: {transaction['amount']}</p>
                               <p>Points Spent: {transaction['spent'] ?? 0}</p>
                               {[...transaction["promotionIds"]]?.length !== 0 ? <p>Promotions Applied:</p> : <br></br>}
+                              <div className={"flex gap-1"}>
                               {[...transaction["promotionIds"]]?.length !== 0 ? [...transaction["promotionIds"]].map(key =>
                                       <span className="badge badge-xs badge-secondary">{promotionMap.get(key)}</span>) :
                                   <br></br>}
+                              </div>
                               {transaction['type'] === "redemption" ? transaction['processedBy'] == null ?
                                       <a className={"link link-primary hover:link-secondary"}
                                          onClick={() => processRequest(transaction)}>{role !== "regular" ? "Process Redemption" : "View QR Code"}</a> :
