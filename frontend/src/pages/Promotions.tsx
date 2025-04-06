@@ -1,9 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {api} from "../config/api.ts";
+import {AuthContext} from "../context/AuthContext.tsx";
 
 export const Promotions:React.FC = () => {
   const [promos, setPromos] = useState([])
   const [promoToEdit, setPromoToEdit] = useState(-1)
+  const {role} = useContext(AuthContext)
   const [form, setForm] = useState({name: "", description: "", type: "", startTime: "", endTime: "", minSpending: 0, rate: 0, points: 0})
 
   const fetchPromotions = async () => {
@@ -67,12 +69,12 @@ export const Promotions:React.FC = () => {
     <div className="drawer-content">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Promotions</h1>
-        <label htmlFor="my-drawer-4" className="btn btn-primary" onClick={() => {
+        {role !== null && ["manager", "superuser"].includes(role) && <label htmlFor="my-drawer-4" className="btn btn-primary" onClick={() => {
           setPromoToEdit(-1)
           setForm({name: "", description: "", type: "", startTime: "", endTime: "",  minSpending: 0, rate: 0, points: 0})
         }}>
           Create Promotion
-        </label>
+        </label>}
       </div>
       <div className="overflow-x-auto">
         <table className="table">
@@ -88,6 +90,7 @@ export const Promotions:React.FC = () => {
             <th>Rate</th>
             <th>Points</th>
             <th></th>
+            <th></th>
           </tr>
           </thead>
           <tbody>
@@ -101,7 +104,7 @@ export const Promotions:React.FC = () => {
             <td>{promo['minSpending']}</td>
             <td>{Math.round(Number(promo['rate'])*100)/100}</td>
             <td>{promo['points']}</td>
-            <td><a className={"link link-primary hover:link-secondary"} onClick={() => {
+            <td>{role !== null && ["manager", "superuser"].includes(role) && <a className={"link link-primary hover:link-secondary"} onClick={() => {
               setPromoToEdit(promo['id'])
               setForm({
                 name: promo['name'],
@@ -117,7 +120,8 @@ export const Promotions:React.FC = () => {
                   "my-drawer-4"
               ) as HTMLInputElement;
               if (checkbox) checkbox.checked = true;
-            }}>Edit</a></td>
+            }}>Edit</a>}</td>
+            <td>{role !== null && ["manager", "superuser"].includes(role) &&<a className={"link link-primary"}>Delete</a>}</td>
           </tr>))}
           </tbody>
         </table>
@@ -169,7 +173,7 @@ export const Promotions:React.FC = () => {
             placeholder={"Start Time"}
             className="input input-bordered mb-2 w-full"
             value={(form as any).startTime}
-            onChange={(e) => setForm({...form, startTime: new Date(e.target.value).toISOString()})}
+            onChange={(e) => setForm({...form, startTime: e.target.value})}
         />
         <h3 className="text-l font-bold mb-2">End Time</h3>
         <input
@@ -179,7 +183,7 @@ export const Promotions:React.FC = () => {
             placeholder={"End Time"}
             className="input input-bordered mb-2 w-full"
             value={(form as any).endTime}
-            onChange={(e) => setForm({...form, endTime: new Date(e.target.value).toISOString()})}
+            onChange={(e) => setForm({...form, endTime: e.target.value})}
         />
         <h3 className="text-l font-bold mb-2">Min Spending</h3>
         <input
