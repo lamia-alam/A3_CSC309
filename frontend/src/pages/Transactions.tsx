@@ -11,18 +11,25 @@ export const Transactions:React.FC = () => {
   const [page, setPage] = React.useState(1)
   const [maxPage, setMaxPage] = React.useState(1)
   const [recipient, setRecipient] = React.useState(-1)
-  const { userInfo } = useContext(AuthContext);
+  const { role } = useContext(AuthContext);
   const [userIdMap, setUserIdMap] = React.useState(new Map<string, number>())
   const [userMap, setUserMap] = React.useState(new Map<string, string>())
   const [promotionMap, setPromotionMap] = React.useState(new Map<string, string>())
   const [transToUserMap, setTransToUserMap] = React.useState(new Map<string, string>())
   const [filters, setFilters] = React.useState({} as FiltersState)
   const [form, setForm] = useState({ type: "", spent: 0, amount: 0, remark: "", relatedId: "", utorid: "", promotionIds: [] as string[] });
+  const allowedTypes = ["redemption", "transfer"]
+  if (role !== "regular") {
+    allowedTypes.push("purchase")
+  }
+  if (role !== null && !["cashier", "regular"].includes(role)) {
+    allowedTypes.push("adjustment")
+  }
 
   const fetchTransactions = async (filters: Object) => {
-    if (userInfo !== null && ["regular", "cashier"].includes(userInfo.role)) {
+    if (role !== null && ["regular", "cashier"].includes(role)) {
       return await api.get("/users/me/transactions", { params: filters});
-    } else if (userInfo !== null && ["manager", "superuser"].includes(userInfo.role)) {
+    } else if (role !== null && ["manager", "superuser"].includes(role)) {
       return await api.get("/transactions", { params: filters});
     }
   }
@@ -191,7 +198,7 @@ export const Transactions:React.FC = () => {
                 value={form.type}
                 onChange={(e) => setForm({...form, type: e.target.value})}
             >
-              {["purchase", "adjustment", "redemption", "transfer"].map((r) => (
+              {allowedTypes.map((r) => (
                   <option key={r} value={r}>
                     {r.charAt(0).toUpperCase() + r.slice(1)}
                   </option>
