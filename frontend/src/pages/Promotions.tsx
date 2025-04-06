@@ -1,6 +1,23 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
+import {api} from "../config/api.ts";
 
 export const Promotions:React.FC = () => {
+  const [promos, setPromos] = useState([])
+
+  const fetchPromotions = async () => {
+    return await api.get("/promotions")
+  }
+
+  const getPromotions = () => {
+    fetchPromotions().then(res => {
+      setPromos(res?.data.results)
+    })
+  }
+
+  useEffect(() => {
+    getPromotions()
+  }, []);
+
   return (
   <div className="drawer drawer-end">
     <input id="my-drawer-4" type="checkbox" className="drawer-toggle"/>
@@ -11,7 +28,32 @@ export const Promotions:React.FC = () => {
           Create Promotion
         </label>
       </div>
-      {/* Page content here */}
+      <div className="overflow-x-auto">
+        <table className="table">
+          {/* head */}
+          <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Job</th>
+            <th>Favorite Color</th>
+          </tr>
+          </thead>
+          <tbody>
+          {promos.map(promo => (<tr>
+            <th>{promo['id']}</th>
+            <td>{promo['name']}</td>
+            <td>{promo['description']}</td>
+            <td>{promo['type']}</td>
+            <td>{new Date(promo['startTime']).toUTCString()}</td>
+            <td>{new Date(promo['endTime']).toUTCString()}</td>
+            <td>{promo['minSpending']}</td>
+            <td>{Math.round(Number(promo['rate'])*100)/100}</td>
+            <td>{promo['points']}</td>
+          </tr>))}
+          </tbody>
+        </table>
+      </div>
     </div>
     <div className="drawer-side">
       <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>

@@ -166,11 +166,14 @@ const getPromotions = async (req, res) => {
       take: limitInt,
     });
 
+    const totalPromos = await prisma.promotion.count({where: where});
+
     return res.json({
-      count: promotions.length,
+      count: totalPromos,
       results: promotions.map((promotion) => ({
         id: promotion.id,
         name: promotion.name,
+        description: promotion.description,
         type: promotion.type,
         endTime: promotion.endTime,
         minSpending: promotion.minSpending,
