@@ -4,48 +4,47 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Menu = () => {
-  const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) {
-    return null;
-  }
+  const { isAuthenticated, userInfo, viewAsRole } = useAuth();
+
+  if (!isAuthenticated) return null;
+
+  // Determine the current role to view
+  const role = viewAsRole || userInfo?.role;
+
   return (
     <>
-      <li>
-        <Link to={Pages.USERS}>Users</Link>
-      </li>
-      <li>
-        <Link to={Pages.TRANSACTIONS}>Transactions</Link>
-      </li>
-      <li>
-        <Link to={Pages.PROMOTIONS}>Promotions</Link>
-      </li>
-      <li>
-        <Link to={Pages.EVENTS}>Events</Link>
-      </li>
+      {(role === "manager" || role === "superuser" || role === "cashier") && (
+        <li>
+          <Link to={Pages.USERS}>Users</Link>
+        </li>
+      )}
+      <li><Link to={Pages.TRANSACTIONS}>Transactions</Link></li>
+      <li><Link to={Pages.PROMOTIONS}>Promotions</Link></li>
+      <li><Link to={Pages.EVENTS}>Events</Link></li>
     </>
   );
 };
 
+const getAvailableRoles = (role: string): string[] => {
+  if (role === "superuser") return ["manager", "cashier", "regular"];
+  if (role === "manager") return ["cashier", "regular"];
+  if (role === "cashier") return ["regular"];
+  return [];
+};
+
 export const Navbar: React.FC = () => {
-  const { isAuthenticated, logout, userInfo } = useAuth();
+  const { isAuthenticated, logout, userInfo, viewAsRole, setViewAsRole, role } = useAuth();
+
+  const actualRole = userInfo?.role;
+  const availableRoles = actualRole ? getAvailableRoles(actualRole) : [];
+
   return (
     <div className="navbar bg-base-100 shadow-sm">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
             </svg>
           </div>
           <ul
@@ -59,28 +58,64 @@ export const Navbar: React.FC = () => {
           daisyUI
         </Link>
       </div>
+
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <Menu />
         </ul>
       </div>
+
       <div className="navbar-end">
         {isAuthenticated ? (
-          <div className="flex items-center gap-3">
-            <div className="avatar">
-              <div className="mask mask-hexagon w-10 bg-green-100 text-center">
+          <div className="dropdown dropdown-end">
+            <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+              <div className="w-10 rounded-full bg-green-100 text-center pt-2 text-xl text-green-800">
                 {userInfo?.avatarUrl ? (
-                  <img src={userInfo?.avatarUrl} />
+                  <img src={userInfo.avatarUrl} className="rounded-full" />
                 ) : (
-                  <span className="text-3xl">
-                    {(userInfo?.name ?? userInfo?.utorid)?.charAt(0)}
-                  </span>
+                  (userInfo?.name ?? userInfo?.utorid)?.charAt(0).toUpperCase()
                 )}
               </div>
-            </div>
-            <button className="btn" onClick={logout}>
-              Logout
-            </button>
+            </label>
+            <ul
+              tabIndex={0}
+              className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-200 rounded-box w-60"
+            >
+              <li><Link to="/account-info">Update Account Info</Link></li>
+              <li><Link to="/reset-password-manual">Change Password</Link></li>
+
+              {availableRoles.length > 0 && (
+                <li className="mt-2">
+                  <span className="font-semibold">View as:</span>
+                  <ul className="pl-3">
+                    {availableRoles.map((r) => (
+                      <li key={r}>
+                        <button
+                          className={`text-sm ${viewAsRole === r ? "font-bold" : ""}`}
+                          onClick={() => setViewAsRole(r)}
+                        >
+                          {r.charAt(0).toUpperCase() + r.slice(1)}
+                        </button>
+                      </li>
+                    ))}
+                    {viewAsRole && (
+                      <li>
+                        <button
+                          className="text-sm text-green-600"
+                          onClick={() => setViewAsRole(null)}
+                        >
+                          Reset View
+                        </button>
+                      </li>
+                    )}
+                  </ul>
+                </li>
+              )}
+
+              <li className="mt-2">
+                <button onClick={logout}>Logout</button>
+              </li>
+            </ul>
           </div>
         ) : (
           <Link to={Pages.LOGIN} className="btn">

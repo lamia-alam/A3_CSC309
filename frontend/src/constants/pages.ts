@@ -43,7 +43,7 @@ export enum Pages {
 
   // Manager
   // A page that allows managers to create new events.
-  // A page that displays all events (with filters, order-by, and pagination).
+  // A page that displays all events (with filters, // only do this if asked by prof --> order-by, and pagination).
   // A page that allows managers to view/edit/delete a specific event.
   // A page that allows managers to add or remove users from an event.
   // Manager + Organizer
