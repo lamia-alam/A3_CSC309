@@ -5,7 +5,6 @@ import { PublishEvent } from "./Publish";
 import { useAuth } from "../../../context/AuthContext";
 import { EditEvent } from "./Edit";
 import { DeleteEvent } from "./Delete";
-import { AssignOrganizer } from "./AssignOrganizer";
 import { EventType } from "../EventTable";
 
 export const EventActionsWrapper: React.FC<
@@ -28,7 +27,6 @@ export const EventActionsWrapper: React.FC<
         <>
         <EditEvent params={params} />  {/* organizer can edit their own events */}
         <DeleteEvent params={params} />
-        <AssignOrganizer params={params} />
         </>
       )}
     </div>

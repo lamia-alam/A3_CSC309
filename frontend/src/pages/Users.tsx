@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { CreateUserDrawer } from "../components/CreateUserDrawer";
 import { debounce } from 'lodash';
 
-type User = {
+export type User = {
   id: number;
   name: string;
   utorid: string;

@@ -11,7 +11,6 @@ type EventContextType = {
   pageSize: number;
   selectEventId: number | null;
   setSelectEventId: (id: number | null) => void;
-  allUsers: any[];
 };
 
 const EventContext = createContext<EventContextType>({
@@ -24,7 +23,6 @@ const EventContext = createContext<EventContextType>({
     pageSize: 5,
     selectEventId: null,
     setSelectEventId: () => {},
-    allUsers: [],
 });
 
 export const EventProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -33,7 +31,6 @@ export const EventProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [pageSize, setPageSize] = useState(5);
   const [totalItems, setTotalItems] = useState(0);
   const [selectEventId, setSelectEventId] = useState<number | null>(null);
-  const [allUsers, setAllUsers] = useState<any[]>([]);
 
   const refreshEvents = async () => {
     const response = await api.get("/events", {
@@ -45,11 +42,6 @@ export const EventProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setEvents(response.data.results);
     setTotalItems(response.data.count);
   };
-
-  const getAllUsers = async () => {
-    const response = await api.get("/users", {params: {limit: 1000}});
-    setAllUsers(response.data.results);
-  }
 
   const pageCount = useMemo(() => {
     return Math.ceil(totalItems / pageSize);
@@ -68,12 +60,9 @@ export const EventProvider: React.FC<PropsWithChildren> = ({ children }) => {
     refreshEvents();
   }, [page, pageSize]);
 
-  useEffect(() => {
-    getAllUsers();
-  }, []); 
 
   return (
-    <EventContext.Provider value={{ allUsers, events, refreshEvents, handlePageSizeChange, handlePageChange, pageCount, page, pageSize, selectEventId, setSelectEventId }}>
+    <EventContext.Provider value={{ events, refreshEvents, handlePageSizeChange, handlePageChange, pageCount, page, pageSize, selectEventId, setSelectEventId }}>
       {children}
     </EventContext.Provider>
   );

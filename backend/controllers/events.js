@@ -718,6 +718,11 @@ const addEventOrganizer = async (req, res) => {
         utorid,
       },
       include: {
+        EventOrganizer: {
+          include: {
+            event: true,
+          },
+        },
         EventGuests: {
           include: {
             event: true,
@@ -725,6 +730,7 @@ const addEventOrganizer = async (req, res) => {
         },
       },
     });
+    
 
     if (!organizer) {
       return res.status(404).json({ error: "Organizer not found." });
@@ -738,6 +744,16 @@ const addEventOrganizer = async (req, res) => {
       return res.status(400).json({
         error:
           "Organizer is already a guest. Remove them from guest list and try again",
+      });
+    }
+
+    if (
+      organizer.EventOrganizer.some(
+        (event) => event.eventId === parseInt(eventId, 10)
+      )
+    ) {
+      return res.status(400).json({
+        error: "Organizer is already an Organizer.",
       });
     }
 

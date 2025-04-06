@@ -10,6 +10,7 @@ import type {
 import { useAuth } from "../../context/AuthContext";
 import { EventActionsWrapper } from "../../components/events/event-actions/EventActionsWrapper";
 import { useEvent } from "../../context/EventContext";
+import { Link } from "react-router-dom";
 
 export type EventType = {
   id: number;
@@ -45,9 +46,9 @@ export const EventTable: React.FC = () => {
       cellRenderer: (params: ICellRendererParams) => {
         return (
           <div className="flex items-center">
-            <span>
+            <Link to={`/events/${params.data.id}`}>
               {params.data.name}
-            </span>
+            </Link>
             {params.data.published && (
               <span className="badge badge-sm badge-success ml-2"></span>
             )}
