@@ -5,10 +5,12 @@ import {AuthContext} from "../context/AuthContext.tsx";
 import TransactionFilters, {FiltersState} from "../components/TransactionFilters.tsx";
 import Select from 'react-select';
 type OptionType = { value: string; label: string };
+import QRCode from "react-qr-code";
 
 export const Transactions:React.FC = () => {
   const [trans, setTrans] = React.useState([])
   const [page, setPage] = React.useState(1)
+  const [id, setId] = React.useState(-1)
   const [maxPage, setMaxPage] = React.useState(1)
   const [recipient, setRecipient] = React.useState(-1)
   const { role } = useContext(AuthContext);
@@ -40,6 +42,23 @@ export const Transactions:React.FC = () => {
 
   const fetchPromotions = async () => {
     return await api.get("/promotions")
+  }
+
+  const processRequest = (transaction: any) => {
+    if (role !== "regular") {
+      const payload = {} as any
+      payload.processed = true
+      const url = `/transactions/${transaction['id']}/processed`
+      api.patch(url, payload).then(() => {
+        alert("Transaction processed successfully.");
+        getTransactions()
+      }).catch(res => {
+        alert(`Transaction could not be processed: ${res.response.data.error} `)
+      })
+    } else {
+      setId(transaction['id'] || -1);
+      (document.getElementById('my_modal_2') as HTMLDialogElement)?.showModal();
+    }
   }
 
   const getTransactions = () => {
@@ -161,14 +180,22 @@ export const Transactions:React.FC = () => {
                                   className={`badge badge-secondary badgeColor-${transaction['type']}`}>{String(transaction['type']).toUpperCase()}</div>
                             </h2>
                             <div className="divider m-1"></div>
-                            <p>Notes: {transaction['remark']}</p>
-                            <p>Created by: {userMap.get(transaction['createdBy'])}</p>
-                            <p>Customer: {userMap.get(transaction['utorid'])}</p>
-                            <p>Points Awarded: {transaction['amount']}</p>
-                            <p>Points Spent: {transaction['spent'] ?? 0}</p>
-                            {[...transaction["promotionIds"]]?.length !== 0 ?  <p>Promotions Applied:</p> : <p>{" "}</p> }
-                            {[...transaction["promotionIds"]]?.length !== 0 ? [...transaction["promotionIds"]].map(key =>
-                                <span className="badge badge-xs badge-secondary">{promotionMap.get(key)}</span>) : <p>{" "}</p>}
+                            <div className={"flex flex-col"}>
+                              <p>Notes: {transaction['remark']}</p>
+                              <p>Created by: {userMap.get(transaction['createdBy'])}</p>
+                              <p>Customer: {userMap.get(transaction['utorid'])}</p>
+                              <p>Points Awarded: {transaction['amount']}</p>
+                              <p>Points Spent: {transaction['spent'] ?? 0}</p>
+                              {[...transaction["promotionIds"]]?.length !== 0 ? <p>Promotions Applied:</p> : <br></br>}
+                              {[...transaction["promotionIds"]]?.length !== 0 ? [...transaction["promotionIds"]].map(key =>
+                                      <span className="badge badge-xs badge-secondary">{promotionMap.get(key)}</span>) :
+                                  <br></br>}
+                              {transaction['type'] === "redemption" ? transaction['processedBy'] == null ?
+                                      <a className={"link link-primary"}
+                                         onClick={() => processRequest(transaction)}>{role !== "regular" ? "Process Redemption" : "View QR Code"}</a> :
+                                      <p>Processed By: {userMap.get(transaction['processedBy'])}</p> :
+                                  <br></br>}
+                            </div>
                           </div>
                         </div>
                     )
@@ -177,7 +204,7 @@ export const Transactions:React.FC = () => {
               </div>
             </div>
             <div className="join flex flex-row justify-end p-3">
-            <button className="join-item btn btn-outline w-30" onClick={() => setPage(page - 1)}
+              <button className="join-item btn btn-outline w-30" onClick={() => setPage(page - 1)}
                       disabled={page === 1}>Previous
               </button>
               <button className="join-item btn btn-outline w-30" onClick={() => setPage(page + 1)}
@@ -215,7 +242,7 @@ export const Transactions:React.FC = () => {
                   value={(form as any).spent}
                   onChange={(e) => setForm({...form, spent: Number(e.target.value)})}
               />
-              </>}
+            </>}
             {["adjustment", "redemption", "transfer"].includes(form.type) && <>
               <h3 className="text-l font-bold mb-2">Amount</h3>
               <input
@@ -227,15 +254,15 @@ export const Transactions:React.FC = () => {
                   onChange={(e) => setForm({...form, amount: Number(e.target.value)})}
               />
             </>}
-              <h3 className="text-l font-bold mb-2">Remark</h3>
-              <input
-                  key={"remark"}
-                  name={"remark"}
-                  placeholder={"Remark"}
-                  className="input input-bordered mb-2 w-full"
-                  value={(form as any).remark}
-                  onChange={(e) => setForm({...form, remark: e.target.value})}
-              />
+            <h3 className="text-l font-bold mb-2">Remark</h3>
+            <input
+                key={"remark"}
+                name={"remark"}
+                placeholder={"Remark"}
+                className="input input-bordered mb-2 w-full"
+                value={(form as any).remark}
+                onChange={(e) => setForm({...form, remark: e.target.value})}
+            />
             {form.type === "adjustment" && <>
               <h3 className="text-l font-bold mb-2">Related Transaction</h3>
               <select
@@ -259,41 +286,56 @@ export const Transactions:React.FC = () => {
             </>}
             {form.type !== "redemption" && <>
               <h3 className="text-l font-bold mb-2">Customer</h3>
-            <select
-                className="select select-bordered mb-4 w-full"
-                value={form.utorid}
-                disabled={form.type === "adjustment"}
-                onChange={(e) => {
-                  if (form.type === "transfer") {
-                    setRecipient(userIdMap.get(e.target.value) || -1)
-                  } else {
-                    setForm({...form, utorid: e.target.value})}
+              <select
+                  className="select select-bordered mb-4 w-full"
+                  value={form.utorid}
+                  disabled={form.type === "adjustment"}
+                  onChange={(e) => {
+                    if (form.type === "transfer") {
+                      setRecipient(userIdMap.get(e.target.value) || -1)
+                    } else {
+                      setForm({...form, utorid: e.target.value})
+                    }
                   }
-                }
-            >
-              {[...userMap.keys()].map((r) => (
-                  <option key={r} value={r}>
-                    {userMap.get(r)}
-                  </option>
-              ))}
-              <option key={""} value={""}>
-                {"None"}
-              </option>
-            </select>
+                  }
+              >
+                {[...userMap.keys()].map((r) => (
+                    <option key={r} value={r}>
+                      {userMap.get(r)}
+                    </option>
+                ))}
+                <option key={""} value={""}>
+                  {"None"}
+                </option>
+              </select>
             </>}
             {!["redemption", "transfer"].includes(form.type) && <>
               <h3 className="text-l font-bold mb-2">Promotions</h3>
-            <Select
-                options={options}
+              <Select
+                  options={options}
                   isMulti
                   value={selectedValues}
-                  onChange={(vals) => setForm({...form, promotionIds: vals.map(elem => elem.value) })}
+                  onChange={(vals) => setForm({...form, promotionIds: vals.map(elem => elem.value)})}
                   placeholder="Promotions"
               />
             </>}
             <button className={"btn btn-primary mt-4"} onClick={submitForm}/>
           </div>
         </div>
+        <dialog id="my_modal_2" className="modal">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">QR Code of Transaction</h3>
+            <QRCode
+                size={256}
+                style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                value={id.toString()}
+                viewBox={`0 0 256 256`}
+            />
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
       </div>
   )
 }
