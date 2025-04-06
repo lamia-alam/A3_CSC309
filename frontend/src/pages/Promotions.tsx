@@ -4,7 +4,7 @@ import {api} from "../config/api.ts";
 export const Promotions:React.FC = () => {
   const [promos, setPromos] = useState([])
   const [promoToEdit, setPromoToEdit] = useState(-1)
-  const [form, setForm] = useState({name: "", description: "", type: "", startTime: ""})
+  const [form, setForm] = useState({name: "", description: "", type: "", startTime: "", endTime: "", minSpending: 0, rate: 0, points: 0})
 
   const fetchPromotions = async () => {
     return await api.get("/promotions")
@@ -14,6 +14,47 @@ export const Promotions:React.FC = () => {
     fetchPromotions().then(res => {
       setPromos(res?.data.results)
     })
+  }
+
+  const submitForm = () => {
+    const payload = {} as any
+    payload.name = form.name
+    payload.description = form.description
+    payload.type = form.type
+    payload.startTime = form.startTime
+    payload.endTime = form.endTime
+    payload.minSpending = form.minSpending
+    payload.rate = form.rate
+    payload.points = form.points
+    let url = ""
+    if (promoToEdit === -1) {
+      url = "/promotions"
+      api.post(url, payload).then(() => {
+        alert("Promotion created successfully.");
+        setForm({name: "", description: "", type: "", startTime: "", endTime: "",  minSpending: 0, rate: 0, points: 0})
+        getPromotions()
+        const checkbox = document.getElementById(
+            "my-drawer-4"
+        ) as HTMLInputElement;
+        if (checkbox) checkbox.checked = false;
+      }).catch(res => {
+        alert(`Promotion not created: ${res.response.data.error}.`);
+      })
+    } else {
+      url = `/promotions/${promoToEdit}`
+      api.patch(url, payload).then(() => {
+        alert("Promotion edited successfully.");
+        setPromoToEdit(-1)
+        setForm({name: "", description: "", type: "", startTime: "", endTime: "",  minSpending: 0, rate: 0, points: 0})
+        getPromotions()
+        const checkbox = document.getElementById(
+            "my-drawer-4"
+        ) as HTMLInputElement;
+        if (checkbox) checkbox.checked = false;
+      }).catch(res => {
+        alert(`Promotion not edited: ${res.response.data.error}.`);
+      })
+    }
   }
 
   useEffect(() => {
@@ -28,7 +69,7 @@ export const Promotions:React.FC = () => {
         <h1 className="text-2xl font-semibold">Promotions</h1>
         <label htmlFor="my-drawer-4" className="btn btn-primary" onClick={() => {
           setPromoToEdit(-1)
-          setForm({name: "", description: "", type: "", startTime: ""})
+          setForm({name: "", description: "", type: "", startTime: "", endTime: "",  minSpending: 0, rate: 0, points: 0})
         }}>
           Create Promotion
         </label>
@@ -62,8 +103,16 @@ export const Promotions:React.FC = () => {
             <td>{promo['points']}</td>
             <td><a className={"link link-primary hover:link-secondary"} onClick={() => {
               setPromoToEdit(promo['id'])
-              console.log(promo['startTime'])
-              setForm({name: promo['name'], description: promo['description'], type: promo['type'], startTime: String(promo['startTime']).replace("T", " ").replace("Z", "")})
+              setForm({
+                name: promo['name'],
+                description: promo['description'],
+                type: promo['type'],
+                startTime: String(promo['startTime']).replace("T", " ").replace("Z", ""),
+                endTime: String(promo['endTime']).replace("T", " ").replace("Z", ""),
+                minSpending: promo['minSpending'],
+                rate: promo['rate'],
+                points: promo['points']
+              })
               const checkbox = document.getElementById(
                   "my-drawer-4"
               ) as HTMLInputElement;
@@ -112,7 +161,7 @@ export const Promotions:React.FC = () => {
             {"None"}
           </option>}
         </select>
-        <h3 className="text-l font-bold mb-2">Description</h3>
+        <h3 className="text-l font-bold mb-2">Start Time</h3>
         <input
             key={"startTime"}
             name={"startTime"}
@@ -120,8 +169,49 @@ export const Promotions:React.FC = () => {
             placeholder={"Start Time"}
             className="input input-bordered mb-2 w-full"
             value={(form as any).startTime}
-            onChange={(e) => setForm({...form, startTime: e.target.value})}
+            onChange={(e) => setForm({...form, startTime: new Date(e.target.value).toISOString()})}
         />
+        <h3 className="text-l font-bold mb-2">End Time</h3>
+        <input
+            key={"endTime"}
+            name={"endTime"}
+            type={"datetime-local"}
+            placeholder={"End Time"}
+            className="input input-bordered mb-2 w-full"
+            value={(form as any).endTime}
+            onChange={(e) => setForm({...form, endTime: new Date(e.target.value).toISOString()})}
+        />
+        <h3 className="text-l font-bold mb-2">Min Spending</h3>
+        <input
+            key={"minSpending"}
+            name={"minSpending"}
+            type={"number"}
+            placeholder={"Min Spending"}
+            className="input input-bordered mb-2 w-full"
+            value={(form as any).minSpending}
+            onChange={(e) => setForm({...form, minSpending: Number(e.target.value)})}
+        />
+        <h3 className="text-l font-bold mb-2">Rate</h3>
+        <input
+            key={"rate"}
+            name={"rate"}
+            type={"number"}
+            placeholder={"Rate"}
+            className="input input-bordered mb-2 w-full"
+            value={(form as any).rate}
+            onChange={(e) => setForm({...form, rate: Number(e.target.value)})}
+        />
+        <h3 className="text-l font-bold mb-2">Points</h3>
+        <input
+            key={"points"}
+            name={"points"}
+            type={"number"}
+            placeholder={"Points"}
+            className="input input-bordered mb-2 w-full"
+            value={(form as any).points}
+            onChange={(e) => setForm({...form, points: Number(e.target.value)})}
+        />
+        <button className={"btn btn-primary mt-4"} onClick={submitForm}/>
       </div>
     </div>
   </div>
