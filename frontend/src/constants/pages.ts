@@ -53,6 +53,7 @@ export enum Pages {
   // A page that allows awarding points to a single guest, or to all guests who have RSVPed
 
   //filters, potentially adding/removing users from an event today 
+  //complete adding organizers 
   //fix seed.js -->last prio  
   HOME = "/",
   LOGIN = "/login",
