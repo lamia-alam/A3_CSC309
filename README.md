@@ -6,7 +6,7 @@ Implemented login/logout<br />
 Created events table<br />
 Users can rsvp themselves to an event<br />
 Managers can publish eventt<br />
-
+Transactions can be viewed, created, and processed<br/>
 <br />
 <br />
 
