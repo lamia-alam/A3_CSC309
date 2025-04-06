@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const prisma = require("../prisma/prisma_client");
 const { hashedPassword, comparePassword, SECRET_KEY, passwordRegex } = require("../utils/jwt");
 const { TokenType } = require("@prisma/client");
+const {sendResetEmail} = require("../utils/email");
 const router = express.Router();
 
 // TODO 429 too many requests implement rate limiting
@@ -87,6 +88,7 @@ router.post("/resets", async (req, res) => {
     });
 
     // send email with token
+    sendResetEmail(user.email, token);
     return res.status(202).json({
       expiresAt: expiryDate,
       resetToken: token,
