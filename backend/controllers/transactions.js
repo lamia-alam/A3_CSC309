@@ -304,6 +304,11 @@ const getTransactions = async (req, res) => {
         type: true,
         points: true,
         spent: true,
+        processedByUser: {
+          select: {
+            utorid: true,
+          },
+        },
         Promotions: {
           select: {
             id: true,
@@ -319,8 +324,10 @@ const getTransactions = async (req, res) => {
       },
     });
 
+    const totalTrans = await prisma.transaction.count({where: where});
+
     res.status(200).json({
-      count: transactions.length,
+      count: totalTrans,
       results: transactions.map((transaction) => ({
         id: transaction.id,
         utorid: transaction.user.utorid,
@@ -330,7 +337,8 @@ const getTransactions = async (req, res) => {
         promotionIds: transaction.Promotions.map((promotion) => promotion.id),
         suspicious: transaction.suspicious,
         remark: transaction.remark ?? "",
-        createdBy: transaction.createdByUser.utorid,
+        createdBy: transaction.createdByUser?.utorid,
+        processedBy: transaction.processedByUser?.utorid,
       })),
     });
   } catch (error) {
