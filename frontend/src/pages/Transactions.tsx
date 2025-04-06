@@ -164,7 +164,7 @@ export const Transactions:React.FC = () => {
         <div className="drawer-content">
           <div className="flex justify-between items-center mb-3">
             <h1 className="text-2xl font-semibold">Transactions</h1>
-            <label htmlFor="my-drawer" className="btn btn-primary">
+            <label htmlFor="my-drawer" className="btn btn-primary hover:btn-secondary">
               Create Transaction
             </label>
           </div>
@@ -340,7 +340,7 @@ export const Transactions:React.FC = () => {
                   placeholder="Promotions"
               />
             </>}
-            <button className={"btn btn-primary mt-4"} onClick={submitForm}>Submit</button>
+            <button className={"btn btn-primary hover:btn-secondary mt-4"} onClick={submitForm}>Submit</button>
           </div>
         </div>
         <dialog id="my_modal_2" className="modal">

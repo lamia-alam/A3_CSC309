@@ -98,7 +98,7 @@ export const Promotions:React.FC = () => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold">Promotions</h1>
             {role !== null && ["manager", "superuser"].includes(role) &&
-                <label htmlFor="my-drawer-4" className="btn btn-primary" onClick={() => {
+                <label htmlFor="my-drawer-4" className="btn btn-primary hover:btn-secondary" onClick={() => {
                   setPromoToEdit(-1)
                   setForm({
                     name: "",
@@ -161,7 +161,7 @@ export const Promotions:React.FC = () => {
                       if (checkbox) checkbox.checked = true;
                     }}>Edit</a>}</td>
                 <td>{role !== null && ["manager", "superuser"].includes(role) &&
-                    <a className={"link link-primary"} onClick={() => setupDelete(promo['id'])}>Delete</a>}</td>
+                    <a className={"link link-primary hover:link-secondary"} onClick={() => setupDelete(promo['id'])}>Delete</a>}</td>
               </tr>))}
               </tbody>
             </table>
@@ -263,7 +263,7 @@ export const Promotions:React.FC = () => {
                 value={(form as any).points}
                 onChange={(e) => setForm({...form, points: Number(e.target.value)})}
             />
-            <button className={"btn btn-primary mt-4"} onClick={submitForm}>Submit</button>
+            <button className={"btn btn-primary hover:btn-secondary mt-4"} onClick={submitForm}>Submit</button>
           </div>
         </div>
         <dialog id="my_modal_3" className="modal">
@@ -271,9 +271,9 @@ export const Promotions:React.FC = () => {
             <h3 className="font-bold text-lg">{`Are you sure you would like to delete ${promoMap.get(promoToDelete)}?`}</h3>
             <br/>
             <div className={"flex justify-end gap-1"}>
-              <button className={"btn btn-primary"} onClick={() => deletePromotion()}>Yes</button>
+              <button className={"btn btn-primary hover:btn-secondary"} onClick={() => deletePromotion()}>Yes</button>
               <form method="dialog">
-                <button className={"btn btn-secondary"}>No</button>
+                <button className={"btn btn-secondary hover:btn-primary"}>No</button>
               </form>
             </div>
           </div>
