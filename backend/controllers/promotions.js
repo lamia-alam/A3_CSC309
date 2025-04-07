@@ -86,7 +86,7 @@ const createPromotion = async (req, res) => {
 
 const getPromotions = async (req, res) => {
   console.log("getPromotions called");
-  const { name, type, page = 1, limit = 10, started, ended } = req.query;
+  const { name, type, description, minSpending, rate, points, page = 1, limit = 10, started, ended } = req.query;
 
   const isManagerOrSuperuser = [Role.manager, Role.superuser].includes(
     req.user.role
@@ -150,6 +150,10 @@ const getPromotions = async (req, res) => {
 
     if (name) where.name = name;
     if (type) where.type = type;
+    if (description) where.description = description;
+    if (minSpending) where.minSpending = Number(minSpending);
+    if (rate) where.rate = Number(rate);
+    if (points) where.points = Number(points);
 
     if (isManagerOrSuperuser) {
       if (started === "true") where.startTime = { lte: new Date() };

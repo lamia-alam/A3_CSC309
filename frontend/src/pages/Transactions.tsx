@@ -20,7 +20,7 @@ export const Transactions:React.FC = () => {
   const [promotionMap, setPromotionMap] = React.useState(new Map<string, string>())
   const [transToUserMap, setTransToUserMap] = React.useState(new Map<string, string>())
   const [filters, setFilters] = React.useState({} as FiltersState)
-  const [form, setForm] = useState({ type: "", spent: 0, amount: 0, remark: "", relatedId: "", utorid: "", promotionIds: [] as string[] });
+  const [form, setForm] = useState({ type: "", spent: "", amount: "", remark: "", relatedId: "", utorid: "", promotionIds: [] as string[] });
   const allowedTypes = ["redemption", "transfer"]
   if (role !== "regular") {
     allowedTypes.push("purchase")
@@ -155,7 +155,7 @@ export const Transactions:React.FC = () => {
     }
     api.post(url, payload).then(() => {
         alert("Transaction created successfully.");
-        setForm({ type: "", spent: 0, amount: 0, remark: "", relatedId: "", utorid: "", promotionIds: [] as string[] })
+        setForm({ type: "", spent: "", amount: "", remark: "", relatedId: "", utorid: "", promotionIds: [] as string[] })
         getTransactions()
         const checkbox = document.getElementById(
             "my-drawer"
@@ -257,7 +257,7 @@ export const Transactions:React.FC = () => {
                   </option>
               ))}
               <option key={""} value={""}>
-                {"None"}
+                {"Type"}
               </option>
             </select>
             {form.type === "purchase" && <>
@@ -265,10 +265,11 @@ export const Transactions:React.FC = () => {
               <input
                   key={"spent"}
                   name={"spent"}
+                  placeholder={"Spent"}
                   type={"number"}
                   className="input input-bordered mb-2 w-full"
                   value={(form as any).spent}
-                  onChange={(e) => setForm({...form, spent: Number(e.target.value)})}
+                  onChange={(e) => setForm({...form, spent: e.target.value})}
               />
             </>}
             {["adjustment", "redemption", "transfer"].includes(form.type) && <>
@@ -277,9 +278,10 @@ export const Transactions:React.FC = () => {
                   key={"amount"}
                   name={"amount"}
                   type={"number"}
+                  placeholder={"Amount"}
                   className="input input-bordered mb-2 w-full"
                   value={(form as any).amount}
-                  onChange={(e) => setForm({...form, amount: Number(e.target.value)})}
+                  onChange={(e) => setForm({...form, amount: e.target.value})}
               />
             </>}
             <h3 className="text-l font-bold mb-2">Remark</h3>
@@ -308,7 +310,7 @@ export const Transactions:React.FC = () => {
                     </option>
                 ))}
                 <option key={""} value={""}>
-                  {"None"}
+                  {"Related ID"}
                 </option>
               </select>
             </>}
@@ -333,7 +335,7 @@ export const Transactions:React.FC = () => {
                     </option>
                 ))}
                 <option key={""} value={""}>
-                  {"None"}
+                  {"Customer"}
                 </option>
               </select>
             </>}

@@ -1,7 +1,17 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {api} from "../config/api.ts";
 import {AuthContext} from "../context/AuthContext.tsx";
-import PromotionFilters from "../components/PromotionFilters.tsx";
+
+export type FiltersState = {
+  name: string;
+  type: string;
+  started: boolean;
+  ended: boolean;
+  description: string;
+  minSpending: string;
+  rate: string;
+  points: string;
+};
 
 export const Promotions:React.FC = () => {
   const [promos, setPromos] = useState([])
@@ -9,10 +19,35 @@ export const Promotions:React.FC = () => {
   const [promoToEdit, setPromoToEdit] = useState(-1)
   const [page, setPage] = useState(1)
   const [maxPage, setMaxPage] = useState(1)
-  const [filters, setFilters] = useState({} as any)
+  const [filters, setFilters] = useState<FiltersState>({
+    name: "",
+    type: "",
+    description: "",
+    started: false,
+    ended: false,
+    minSpending: "",
+    rate: "",
+    points: "",
+  });
   const [promoToDelete, setPromoToDelete] = useState(-1)
   const {role} = useContext(AuthContext)
-  const [form, setForm] = useState({name: "", description: "", type: "", startTime: "", endTime: "", minSpending: 0, rate: 0, points: 0})
+  const [form, setForm] = useState({name: "", description: "", type: "", startTime: "", endTime: "", minSpending: "", rate: "", points: ""})
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+      if (["started", "ended"].includes(name)) {
+        if (name === "started") {
+          setFilters({...filters, started: !filters.started})
+        } else {
+          setFilters({...filters, ended: !filters.ended})
+        }
+      } else {
+        setFilters((prev) => ({
+          ...prev,
+          [name]: value.toString(),
+        }));
+      }
+  };
 
   const fetchPromotions = async (filters: any) => {
     if (filters["started"] === false) {
@@ -56,7 +91,7 @@ export const Promotions:React.FC = () => {
       url = "/promotions"
       api.post(url, payload).then(() => {
         alert("Promotion created successfully.");
-        setForm({name: "", description: "", type: "", startTime: "", endTime: "",  minSpending: 0, rate: 0, points: 0})
+        setForm({name: "", description: "", type: "", startTime: "", endTime: "",  minSpending: "", rate: "", points: ""})
         getPromotions()
         const checkbox = document.getElementById(
             "my-drawer-4"
@@ -70,7 +105,7 @@ export const Promotions:React.FC = () => {
       api.patch(url, payload).then(() => {
         alert("Promotion edited successfully.");
         setPromoToEdit(-1)
-        setForm({name: "", description: "", type: "", startTime: "", endTime: "",  minSpending: 0, rate: 0, points: 0})
+        setForm({name: "", description: "", type: "", startTime: "", endTime: "",  minSpending: "", rate: "", points: ""})
         getPromotions()
         const checkbox = document.getElementById(
             "my-drawer-4"
@@ -113,28 +148,129 @@ export const Promotions:React.FC = () => {
                     type: "",
                     startTime: "",
                     endTime: "",
-                    minSpending: 0,
-                    rate: 0,
-                    points: 0
+                    minSpending: "",
+                    rate: "",
+                    points: ""
                   })
                 }}>
                   Create Promotion
                 </label>}
           </div>
-          <PromotionFilters onFilterChange={setFilters}/>
           <div className="overflow-x-auto">
             <table className="table">
               <thead>
               <tr>
                 <th></th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Type</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Min Spending</th>
-                <th>Rate</th>
-                <th>Points</th>
+                <th>
+                  <div className={"flex flex-col w-40"}>
+                    Name
+                  <input
+                      type="text"
+                      name="name"
+                      placeholder="Name"
+                      value={filters.name}
+                      onChange={handleChange}
+                      className="border rounded h-6"
+                  />
+                  </div>
+                </th>
+                <th>
+                  <div className={"flex flex-col"}>
+                    Description
+                    <input
+                        type="text"
+                        name="description"
+                        placeholder="Description"
+                        value={filters.description}
+                        onChange={handleChange}
+                        className="border rounded h-6"
+                    />
+                  </div>
+                </th>
+                <th>
+                  <div className={"flex flex-col"}>
+                    Type
+                    <select
+                        name="type"
+                        value={filters.type}
+                        onChange={handleChange}
+                        className="border rounded h-6"
+                    >
+                      <option value="">Type</option>
+                      <option value="one-time">One-Time</option>
+                      <option value="automatic">Automatic</option>
+                    </select>
+                  </div>
+                </th>
+                <th>
+                  <div className={"flex flex-col"}>
+                    Start Time
+                  <div className={"flex gap-3"}>
+                    <input
+                        type="checkbox"
+                        name="started"
+                        value={"true"}
+                        disabled={filters.ended}
+                        checked={filters.started}
+                        onChange={handleChange}
+                    /><h3>Started</h3>
+                  </div>
+                  </div>
+                </th>
+                <th>
+                  <div className={"flex flex-col"}>
+                    End Time
+                    <div className={"flex gap-3"}>
+                      <input
+                          type="checkbox"
+                          name="ended"
+                          value={"true"}
+                          disabled={filters.started}
+                          checked={filters.ended}
+                          onChange={handleChange}
+                      /><h3>Ended</h3>
+                    </div>
+                  </div>
+                </th>
+                <th>
+                  <div className={"flex flex-col w-30"}>
+                    Min Spending
+                    <input
+                        type="number"
+                        name="minSpending"
+                        placeholder="Min Spending"
+                        value={filters.minSpending}
+                        onChange={handleChange}
+                        className="border rounded h-6"
+                    />
+                  </div>
+                </th>
+                <th>
+                  <div className={"flex flex-col w-13"}>
+                    Rate
+                    <input
+                        type="number"
+                        name="rate"
+                        placeholder="Rate"
+                        value={filters.rate}
+                        onChange={handleChange}
+                        className="border rounded h-6"
+                    />
+                  </div>
+                </th>
+                <th>
+                  <div className={"flex flex-col w-15"}>
+                    Points
+                    <input
+                        type="number"
+                        name="points"
+                        placeholder="Points"
+                        value={filters.points}
+                        onChange={handleChange}
+                        className="border rounded h-6"
+                    />
+                  </div>
+                </th>
                 <th></th>
                 <th></th>
               </tr>
@@ -145,8 +281,8 @@ export const Promotions:React.FC = () => {
                 <td>{promo['name']}</td>
                 <td>{promo['description']}</td>
                 <td>{String(promo['type']).charAt(0).toUpperCase() + String(promo['type']).slice(1)}</td>
-                <td>{new Date(promo['startTime']).toUTCString()}</td>
-                <td>{new Date(promo['endTime']).toUTCString()}</td>
+                <td>{new Date(promo['startTime']).toUTCString().replace(" GMT", "")}</td>
+                <td>{new Date(promo['endTime']).toUTCString().replace(" GMT", "")}</td>
                 <td>{promo['minSpending']}</td>
                 <td>{Math.round(Number(promo['rate']) * 100) / 100}</td>
                 <td>{promo['points']}</td>
@@ -218,7 +354,7 @@ export const Promotions:React.FC = () => {
                   </option>
               ))}
               {promoToEdit === -1 && <option key={""} value={""}>
-                {"None"}
+                {"Type"}
               </option>}
             </select>
             <h3 className="text-l font-bold mb-2">Start Time</h3>
@@ -249,7 +385,7 @@ export const Promotions:React.FC = () => {
                 placeholder={"Min Spending"}
                 className="input input-bordered mb-2 w-full"
                 value={(form as any).minSpending}
-                onChange={(e) => setForm({...form, minSpending: Number(e.target.value)})}
+                onChange={(e) => setForm({...form, minSpending: e.target.value})}
             />
             <h3 className="text-l font-bold mb-2">Rate</h3>
             <input
@@ -259,7 +395,7 @@ export const Promotions:React.FC = () => {
                 placeholder={"Rate"}
                 className="input input-bordered mb-2 w-full"
                 value={(form as any).rate}
-                onChange={(e) => setForm({...form, rate: Number(e.target.value)})}
+                onChange={(e) => setForm({...form, rate: e.target.value})}
             />
             <h3 className="text-l font-bold mb-2">Points</h3>
             <input
@@ -269,7 +405,7 @@ export const Promotions:React.FC = () => {
                 placeholder={"Points"}
                 className="input input-bordered mb-2 w-full"
                 value={(form as any).points}
-                onChange={(e) => setForm({...form, points: Number(e.target.value)})}
+                onChange={(e) => setForm({...form, points: e.target.value})}
             />
             <button className={"btn btn-primary hover:btn-secondary mt-4"} onClick={submitForm}>Submit</button>
           </div>
