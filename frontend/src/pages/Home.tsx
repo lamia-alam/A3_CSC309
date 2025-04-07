@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../config/api";
+import QRCode from "react-qr-code";
 
 type User = { id: number; utorid: string; name: string; email: string; role: string; verified: boolean };
 type Promotion = { id: number; name: string; description: string; points: number; startTime: string; endTime: string };
@@ -114,6 +115,14 @@ export const Home: React.FC = () => {
           <h1 className="text-3xl font-bold text-purple-700">
             Welcome, {userInfo.name || userInfo.utorid}!
           </h1>
+          {/* QR Code Section */}
+          <div className="mb-6 text-center">
+            <QRCode
+              size={156}
+              value={userInfo.utorid} 
+              viewBox="0 0 256 256" 
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
