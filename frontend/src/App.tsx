@@ -8,9 +8,10 @@ import { Transactions } from "./pages/Transactions";
 import { Users } from "./pages/Users";
 import { BaseLayout } from "./layout/BaseLayout";
 import { Login } from "./pages/Login";
-import { ResetPassword } from "./pages/ResetPassword";
+import { ResetPasswordLoggedIn } from "./pages/ResetPasswordLoggedIn";
 import { ForgotPassword } from "./pages/forgotpassword";
 import { AccountInfo } from "./pages/AccountInfo";
+import { ResetLinkPassword } from "./pages/ResetLinkPassword";
 import {
   ProtectedRoutes,
   UnauthenticatedRoutes,
@@ -33,12 +34,12 @@ function App() {
           <Route path={Pages.TRANSACTIONS} element={<Transactions />} />
           <Route path={Pages.USERS} element={<Users />} />
           <Route path="/account-info" element={<AccountInfo />} />
-          <Route path="/reset-password-manual" element={<ResetPassword />} />
+          <Route path="/reset-password-manual" element={<ResetPasswordLoggedIn />} />
         </Route>
         <Route element={<UnauthenticatedRoutes />}>
           <Route path={Pages.LOGIN} element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
+          <Route path="/reset-password/:resetToken" element={<ResetLinkPassword />} />
         </Route>
       </Route>
     </Routes>
