@@ -8,7 +8,7 @@ import { EventProvider } from "../context/EventContext";
 export const Events: React.FC = () => {
 
   return (
-    <EventProvider>
+    <EventProvider url="/events">
       <label
         htmlFor="my-drawer-4"
         className="drawer-button btn btn-primary float-right"

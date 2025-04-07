@@ -133,11 +133,11 @@ export const EventGuests: React.FC<{
           <div className="modal-action">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
-              <button className="btn" onClick={handleAddGuests}>
-                Yes
+              <button className="btn btn-primary" onClick={handleAddGuests}>
+                Add
               </button>
               <button className="btn" onClick={handleCloseUnassignModal}>
-                No
+                Close
               </button>
             </form>
           </div>

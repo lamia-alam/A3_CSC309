@@ -26,15 +26,16 @@ const EventContext = createContext<EventContextType>({
     setSelectEventId: () => {},
 });
 
-export const EventProvider: React.FC<PropsWithChildren> = ({ children }) => {
+export const EventProvider: React.FC<PropsWithChildren<{url: string}>> = ({ children, url }) => {
   const [events, setEvents] = useState<EventType[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalItems, setTotalItems] = useState(0);
   const [selectEventId, setSelectEventId] = useState<number | null>(null);
 
+
   const refreshEvents = async () => {
-    const response = await api.get("/events", {
+    const response = await api.get(url, {
       params: {
         page,
         limit: pageSize,

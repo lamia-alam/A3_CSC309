@@ -21,6 +21,7 @@ const Menu = () => {
       <li><Link to={Pages.TRANSACTIONS}>Transactions</Link></li>
       <li><Link to={Pages.PROMOTIONS}>Promotions</Link></li>
       <li><Link to={Pages.EVENTS}>Events</Link></li>
+      <li><Link to={Pages.MYEVENTS}>My Events</Link></li>
     </>
   );
 };

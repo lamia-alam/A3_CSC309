@@ -6,6 +6,7 @@ import { EventOrganizers } from "../components/events/EventOrganizers";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../config/api";
 import { Pages } from "../constants/pages";
+import { useNavigate } from 'react-router-dom'
 
 type UserType = Pick<User, "id" | "name" | "utorid">;
 
@@ -15,6 +16,7 @@ export type EventDetailsType = EventType & {
 };
 
 export const EventDetails: React.FC = () => {
+  const navigate = useNavigate()
   const { id: eventId } = useParams<{ id: string }>();
 
   const [eventDetails, setEventDetails] = useState<EventDetailsType | null>(
@@ -41,7 +43,7 @@ export const EventDetails: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <Link to={Pages.EVENTS} className="btn btn-link justify-start">
+      <button className="btn btn-link justify-start" onClick={() => navigate(-1)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -56,8 +58,8 @@ export const EventDetails: React.FC = () => {
             d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
           />
         </svg>
-        Back to events
-      </Link>
+        Back
+      </button>
       <div className="card bg-base-200 shadow-lg">
         <div className="card-body">
           {eventDetails.published ? (

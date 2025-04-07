@@ -145,7 +145,6 @@ export const EventOrganizers: React.FC<{
           <button
             className="btn btn-primary btn-sm"
             disabled={
-              !eventDetails.published ||
               new Date(eventDetails.endTime) < new Date()
             }
             onClick={() => handleOpenAssignModal()}
