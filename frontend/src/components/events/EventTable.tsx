@@ -2,21 +2,19 @@ import React, { useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import type {
   ColDef,
-  ICellRendererParams,
   SizeColumnsToContentStrategy,
   SizeColumnsToFitGridStrategy,
   SizeColumnsToFitProvidedWidthStrategy,
 } from "ag-grid-community";
 import { useAuth } from "../../context/AuthContext";
-import { EditEventDrawer } from "../../components/events/EditEventDrawer";
-import { EventActionsWrapper } from "../../components/events/event-actions/EventActionsWrapper";
-import { CreateEventDrawer } from "../../components/events/CreateEventDrawer";
 import { useEvent } from "../../context/EventContext";
+import { defaultColDef, getEventColDefs } from "./eventTableUtils";
 
 export type EventType = {
   id: number;
   name: string;
   location: string;
+  description: string;
   startTime: string;
   endTime: string;
   numGuests: number;
@@ -30,7 +28,6 @@ export const EventTable: React.FC = () => {
   const { userInfo } = useAuth();
   const {
     events,
-    refreshEvents: fetchEvents,
     pageSize,
     page,
     pageCount,
@@ -38,78 +35,10 @@ export const EventTable: React.FC = () => {
     handlePageChange,
   } = useEvent();
 
-  const [selectEventId, setSelectEventId] = useState<number | null>(null);
 
-  const [colDefs] = useState<ColDef<EventType>[]>([
-    {
-      headerName: "Name",
-      lockPinned: true,
-      pinned: true,
-      cellRenderer: (params: ICellRendererParams) => {
-        return (
-          <div className="flex items-center">
-            <span onClick={() => setSelectEventId(params.data.id)}>
-              {params.data.name}
-            </span>
-            {params.data.published && (
-              <span className="badge badge-sm badge-success ml-2"></span>
-            )}
-          </div>
-        );
-      },
-    },
-    { field: "location", headerName: "Location", width: 150 },
-    { field: "numGuests", headerName: "# Guests", width: 150 },
-    {
-      field: "startTime",
-      headerName: "Start Time",
-      minWidth: 180,
-      valueFormatter: (params) => {
-        const date = new Date(params.value);
-        return date.toLocaleString();
-      },
-    },
-    {
-      field: "endTime",
-      headerName: "End Time",
-      minWidth: 180,
-      valueFormatter: (params) => {
-        const date = new Date(params.value);
-        return date.toLocaleString();
-      },
-    },
-    {
-      headerName: "Points awarded",
-      field: "pointsAwarded",
-      minWidth: 100,
-    },
-    {
-      headerName: "Points remaining",
-      field: "pointsRemain",
-      minWidth: 100,
-      hide: userInfo?.role === "regular" || userInfo?.role === "cashier",
-    },
-    { field: "capacity", headerName: "Capacity", width: 150 },
-    {
-      headerName: "Action",
-      pinned: "right",
-      cellRenderer: (params: ICellRendererParams) => (
-        <EventActionsWrapper
-          params={params}
-        />
-      ),
-    },
-  ]);
+  const [colDefs] = useState<ColDef<EventType>[]>(getEventColDefs(userInfo));
 
-  const defaultColDef = useMemo<ColDef>(() => {
-    return {
-      // sortable: true,
-      // filter: true,
-      resizable: false,
-      // flex: 1,
-      minWidth: 100,
-    };
-  }, []);
+ 
 
   const autoSizeStrategy = useMemo<
     | SizeColumnsToFitGridStrategy
@@ -132,6 +61,7 @@ export const EventTable: React.FC = () => {
           headerHeight={40}
           domLayout="autoHeight"
           defaultColDef={defaultColDef}
+          cellSelection={false}
         />
       </div>
       <div className="flex justify-between items-center mt-4">

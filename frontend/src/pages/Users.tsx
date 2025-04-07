@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { api } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 import { CreateUserDrawer } from "../components/CreateUserDrawer";
+import { debounce } from 'lodash';
 
-type User = {
+export type User = {
   id: number;
   name: string;
   utorid: string;
@@ -25,6 +26,17 @@ export const Users: React.FC = () => {
     key: "id", // Default sort key
     direction: "ascending", // Default sort direction
   });
+  const [filters, setFilters] = useState({
+    id: "",
+    name: "",
+    utorid: "",
+    email: "",
+    role: "",
+    verified: "", // "" for all, "true" or "false"
+    suspicious: "", // "" for all, "true" or "false"
+  });   
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage, setUsersPerPage] = useState(5); // Default to 5 users per page
 
   const isSuperuser = role === "superuser";
   const isManager = role === "manager";
@@ -35,6 +47,14 @@ export const Users: React.FC = () => {
     : isManager
     ? ["cashier", "regular"]
     : ["regular"];
+
+  const debouncedSetFilters = debounce((column: keyof typeof filters, value: string) => {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        [column]: value,
+      }));
+    }, 300); // Adjust debounce delay (300ms) as needed
+    
 
   const fetchUsers = async () => {
     try {
@@ -59,7 +79,20 @@ export const Users: React.FC = () => {
     setSortConfig({ key, direction });
   };
 
-  const sortedUsers = [...users].sort((a, b) => {
+  const filteredUsers = users.filter((user) => {
+    return (
+      (filters.id === "" || user.id.toString().includes(filters.id)) &&
+      (filters.name === "" || (user.name?.toLowerCase() ?? "").includes(filters.name.toLowerCase())) &&
+      (filters.utorid === "" || user.utorid.toLowerCase().includes(filters.utorid.toLowerCase())) &&
+      (filters.email === "" || user.email.toLowerCase().includes(filters.email.toLowerCase())) &&
+      (filters.role === "" || user.role.toLowerCase().includes(filters.role.toLowerCase())) &&
+      (filters.verified === "" || user.verified.toString() === filters.verified) &&
+      (filters.suspicious === "" || user.suspicious.toString() === filters.suspicious)
+    );
+  });  
+  
+  // Sorting after filtering
+  const sortedUsers = filteredUsers.sort((a, b) => {
     if (a[sortConfig.key] < b[sortConfig.key]) {
       return sortConfig.direction === "ascending" ? -1 : 1;
     }
@@ -68,11 +101,14 @@ export const Users: React.FC = () => {
     }
     return 0;
   });
-
-  if (!userInfo || (!isSuperuser && !isManager && !isCashier)) {
-    return <div className="p-6 text-xl text-red-600">Access Denied</div>;
-  }
-
+  
+  // Pagination logic
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = sortedUsers.slice(indexOfFirstUser, indexOfLastUser);
+  
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  
   const handleCreate = async () => {
     const { name, utorid, email, role } = form;
 
@@ -132,12 +168,6 @@ export const Users: React.FC = () => {
     const idx = order.indexOf(currentRole);
     const nextRole = order[idx + 1];
 
-    // Restrict manager from promoting managers or higher
-    if (isManager && (currentRole === "manager" || currentRole === "superuser")) {
-      alert("Managers cannot promote other managers or superusers.");
-      return;
-    }
-
     if (idx < order.length - 1) {
       try {
         await api.patch(`/users/${id}`, { role: nextRole });
@@ -152,12 +182,6 @@ export const Users: React.FC = () => {
     const order = ["regular", "cashier", "manager", "superuser"];
     const idx = order.indexOf(currentRole);
     const prevRole = order[idx - 1];
-
-    // Restrict manager from demoting managers or superusers
-    if (isManager && (currentRole === "manager" || currentRole === "superuser")) {
-      alert("Managers cannot demote other managers or superusers.");
-      return;
-    }
 
     if (idx > 0) {
       try {
@@ -182,31 +206,55 @@ export const Users: React.FC = () => {
 
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Users</h1>
-          <label htmlFor="create-user-drawer" className="btn btn-primary">
-            Create User
-          </label>
+          {/* Conditionally render "Create User" button or "Access Denied" message */}
+          {(isSuperuser || isManager || isCashier) ? (
+            <label htmlFor="create-user-drawer" className="btn btn-primary">
+              Create User
+            </label>
+          ) : (
+            <div className="p-6 text-xl text-red-600">Access Denied</div>
+          )}
         </div>
 
         {(isSuperuser || isManager) && (
           <div className="overflow-x-auto">
             <table className="table w-full">
-              <thead>
-                <tr>
-                  {["id", "name", "utorid", "email", "role", "verified", "suspicious"].map((column) => (
-                    <th
-                      key={column}
-                      onClick={() => handleSort(column as keyof User)}
-                      className="cursor-pointer"
-                    >
-                      {column.charAt(0).toUpperCase() + column.slice(1)}{" "}
-                      {sortConfig.key === column && (sortConfig.direction === "ascending" ? "↑" : "↓")}
-                    </th>
-                  ))}
-                  <th>Actions</th>
-                </tr>
-              </thead>
+            <thead>
+              <tr>
+                {["id", "name", "utorid", "email", "role", "verified", "suspicious"].map((column) => (
+                  <th key={column} className="cursor-pointer">
+                    <div className="flex flex-col items-center">
+                      <span onClick={() => handleSort(column as keyof User)}>
+                        {column.charAt(0).toUpperCase() + column.slice(1)}{" "}
+                        {sortConfig.key === column && (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                      </span>
+                      {column === "verified" || column === "suspicious" ? (
+                        <select
+                          className="select select-sm w-32 mt-1"
+                          value={filters[column as keyof typeof filters]}
+                          onChange={(e) => setFilters({ ...filters, [column]: e.target.value })}
+                        >
+                          <option value="">All</option>
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          className="input input-sm w-32 mt-1"
+                          placeholder={`Filter ${column}`}
+                          value={filters[column as keyof typeof filters]}
+                          onChange={(e) => setFilters({ ...filters, [column]: e.target.value })}
+                        />
+                      )}
+                    </div>
+                  </th>
+                ))}
+                <th>Actions</th>
+              </tr>
+            </thead>
               <tbody>
-                {sortedUsers.map((u) => (
+                {currentUsers.map((u) => (
                   <tr key={u.id}>
                     <td>{u.id}</td>
                     <td>{u.name}</td>
@@ -269,6 +317,46 @@ export const Users: React.FC = () => {
             </table>
           </div>
         )}
+
+        {/* Pagination controls */}
+        {(isSuperuser || isManager) && (
+          <div className="flex justify-between items-center mt-4">
+            <div className="flex items-center">
+              <label className="mr-2">Show per page:</label>
+              <div className="btn-group">
+                {[5, 10, 15, 20].map((size) => (
+                  <button
+                    key={size}
+                    className={`btn ${usersPerPage === size ? "btn-primary" : "btn-outline"}`}
+                    onClick={() => setUsersPerPage(size)}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <button
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="btn btn-primary btn-sm"
+              >
+                {"<"}
+              </button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="btn btn-primary btn-sm"
+              >
+                {">"}
+              </button>
+            </div>
+          </div>
+        )}
+
       </div>
 
       {/* Drawer content */}

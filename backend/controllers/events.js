@@ -292,12 +292,245 @@ const getEvents = async (req, res) => {
         .map((event) => ({
           id: event.id,
           name: event.name,
+          description: event.description,
           location: event.location,
           startTime: event.startTime,
           endTime: event.endTime,
           capacity: event.capacity || null,
           numGuests: event.EventGuests.length,
           ...(isManagerOrSuperuser && {
+            published: event.published,
+            pointsAwarded: event.pointsAwarded,
+            pointsRemain: event.pointsRemain,
+          }),
+        })),
+    });
+  } catch (error) {
+    console.log("🚀 ~ getEvents ~ error:", error);
+    console.log("Request query:", req.query);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getMyEvents = async (req, res) => {
+  console.log("getEvents called, query:", req.query);
+  try {
+    const {
+      name,
+      location,
+      started,
+      ended,
+      showFull = false,
+      published,
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    const isOrganizerOrManagerOrSuperuser = ['EventOrganizer', Role.manager, Role.superuser].includes(
+      req.user.role
+    );
+
+    const validBooleanValues = ["true", "false"];
+
+    if (started && !validBooleanValues.includes(started)) {
+      console.log(
+        "getEvents",
+        400,
+        "Invalid value for started. Use 'true' or 'false'.",
+        "Request query:",
+        req.query
+      );
+      return res
+        .status(400)
+        .json({ error: "Invalid value for started. Use 'true' or 'false'." });
+    }
+
+    if (ended && !validBooleanValues.includes(ended)) {
+      console.log(
+        "getEvents",
+        400,
+        "Invalid value for ended. Use 'true' or 'false'.",
+        "Request query:",
+        req.query
+      );
+      return res
+
+        .status(400)
+        .json({ error: "Invalid value for ended. Use 'true' or 'false'." });
+    }
+
+    if (showFull && !validBooleanValues.includes(showFull)) {
+      console.log(
+        "getEvents",
+        400,
+        "Invalid value for showFull. Use 'true' or 'false'.",
+        "Request query:",
+        req.query
+      );
+      return res
+        .status(400)
+        .json({ error: "Invalid value for showFull. Use 'true' or 'false'." });
+    }
+
+    if (published && !validBooleanValues.includes(published)) {
+      console.log(
+        "getEvents",
+        400,
+        "Invalid value for published. Use 'true' or 'false'.",
+        "Request query:",
+        req.query
+      );
+      return res
+        .status(400)
+        .json({ error: "Invalid value for published. Use 'true' or 'false'." });
+    }
+
+    if (published && !['EventOrganizer', Role.manager, Role.superuser].includes(req.user.role)) {
+      console.log(
+        "getEvents",
+        403,
+        "Unauthorized. Only managers and superusers can view unpublished events.",
+        "Request query:",
+        req.query
+      );
+      return res.status(403).json({
+        error:
+          "Unauthorized. Only managers and superusers can view unpublished events.",
+      });
+    }
+
+    if (started && ended) {
+      console.log(
+        "getEvents",
+        400,
+        "Cannot have both started and ended together.",
+        "Request query:",
+        req.query
+      );
+      return res
+        .status(400)
+        .json({ error: "Cannot have both started and ended together." });
+    }
+
+    let where = {};
+    if (name) {
+      where.name = name;
+    }
+    if (location) {
+      where.location = location;
+    }
+
+    const now = new Date();
+    if (started === "true") {
+      where.startTime = {
+        lte: now,
+      };
+    } else if (started === "false") {
+      where.startTime = {
+        gt: now,
+      };
+    }
+
+    if (ended === "true") {
+      where.endTime = {
+        lte: now,
+      };
+    } else if (ended === "false") {
+      where.endTime = {
+        gt: now,
+      };
+    }
+
+    if (published) {
+      where.published = published === "true";
+    }
+
+    if (!isOrganizerOrManagerOrSuperuser) {
+      where.published = true;
+    }
+
+    where.EventOrganizer = {
+        some: {
+          organizerId: req.user.id,
+      }
+    }
+
+    const pageInt = parseInt(page, 10);
+    const limitInt = parseInt(limit, 10);
+
+    if (isNaN(pageInt) || isNaN(limitInt) || pageInt <= 0 || limitInt <= 0) {
+      console.log(
+        "getEvents",
+        400,
+        "Invalid page or limit.",
+        "Request query:",
+        req.query
+      );
+      return res.status(400).json({ error: "Invalid page or limit." });
+    }
+
+    const totalEvents = await prisma.event.findMany({
+      where,
+      include: {
+        EventGuests: {
+          include: {
+            guest: true,
+          },
+        },
+      },
+    });
+   
+
+    const eventCount = totalEvents.filter((event) => {
+      if (showFull && showFull === "false") {
+        return (
+          event.capacity === null || event.capacity > event.EventGuests.length
+        );
+      }
+      return true;
+    }).length;
+    console.log("🚀 ~ getEvents ~ eventCount:", eventCount);
+
+    const events = await prisma.event.findMany({
+      where,
+      skip: (pageInt - 1) * limitInt,
+      take: limitInt,
+      include: {
+        EventGuests: {
+          include: {
+            guest: true,
+          },
+        },
+        EventOrganizer: {
+          include: {
+            organizer: true,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json({
+      count: eventCount,
+      results: events
+        .filter((event) => {
+          if (showFull && showFull === "false") {
+            return (
+              event.capacity === null ||
+              event.capacity > event.EventGuests.length
+            );
+          }
+          return true;
+        })
+        .map((event) => ({
+          id: event.id,
+          name: event.name,
+          description: event.description,
+          location: event.location,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          capacity: event.capacity || null,
+          numGuests: event.EventGuests.length,
+          ...(isOrganizerOrManagerOrSuperuser && {
             published: event.published,
             pointsAwarded: event.pointsAwarded,
             pointsRemain: event.pointsRemain,
@@ -717,6 +950,11 @@ const addEventOrganizer = async (req, res) => {
         utorid,
       },
       include: {
+        EventOrganizer: {
+          include: {
+            event: true,
+          },
+        },
         EventGuests: {
           include: {
             event: true,
@@ -724,6 +962,7 @@ const addEventOrganizer = async (req, res) => {
         },
       },
     });
+    
 
     if (!organizer) {
       return res.status(404).json({ error: "Organizer not found." });
@@ -737,6 +976,16 @@ const addEventOrganizer = async (req, res) => {
       return res.status(400).json({
         error:
           "Organizer is already a guest. Remove them from guest list and try again",
+      });
+    }
+
+    if (
+      organizer.EventOrganizer.some(
+        (event) => event.eventId === parseInt(eventId, 10)
+      )
+    ) {
+      return res.status(400).json({
+        error: "Organizer is already an Organizer.",
       });
     }
 
@@ -1472,6 +1721,7 @@ const createEventTransaction = async (req, res) => {
 module.exports = {
   createEvent,
   getEvents,
+  getMyEvents,
   getEventById,
   updateEvent,
   deleteEvent,

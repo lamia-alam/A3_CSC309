@@ -4,6 +4,7 @@ const authentication = require("../middleware/auth");
 const {
   createEvent,
   getEvents,
+  getMyEvents,
   getEventById,
   updateEvent,
   deleteEvent,
@@ -18,7 +19,6 @@ const {
 
 const router = express.Router();
 
-
 router.post(
   "/",
   authentication,
@@ -29,10 +29,13 @@ router.post(
 router.get("/", authentication, getEvents);
 
 router.get(
-  "/:eventId",
+  "/me",
   authentication,
-  getEventById
+  clearance(["manager", "superuser", "EventOrganizer"]),
+  getMyEvents
 );
+
+router.get("/:eventId", authentication, getEventById);
 
 router.patch(
   "/:eventId",
@@ -41,7 +44,12 @@ router.patch(
   updateEvent
 );
 
-router.delete("/:eventId", authentication, clearance(["manager", "superuser"]), deleteEvent);
+router.delete(
+  "/:eventId",
+  authentication,
+  clearance(["manager", "superuser"]),
+  deleteEvent
+);
 
 router.post(
   "/:eventId/organizers",

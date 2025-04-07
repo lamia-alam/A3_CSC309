@@ -37,6 +37,8 @@ export enum Pages {
   // A page that allows managers to view/edit/delete a specific promotion.
 
   EVENTS = "/events",
+  MYEVENTS = "/my-events", // table that shows all events that the user is an organizer for
+  EVENTBYID = "/events/:id",
   // Regular User
   // A page that displays all published events.
   // A page that displays a specific event and allows a user to RSVP to an event.
@@ -44,7 +46,7 @@ export enum Pages {
   // Manager
   // A page that allows managers to create new events.
   // A page that displays all events (with filters, // only do this if asked by prof --> order-by, and pagination).
-  // A page that allows managers to view/edit/delete a specific event.
+  // A page that allows managers to view/edit/delete a specific event. 
   // A page that allows managers to add or remove users from an event.
   // Manager + Organizer
   // A page that displays the events that the user is responsible for.
@@ -52,6 +54,10 @@ export enum Pages {
   // A page that allows adding a user to the event that he/she is responsible for.
   // A page that allows awarding points to a single guest, or to all guests who have RSVPed
 
+  //complete adding organizers 
+  //filters (events you're in charge of, etc), removing event organizers from an event 
+  //guest list (need to be able to add + remove guests & anyone who RSVP's should appear)
+  //fix seed.js -->last prio  
   HOME = "/",
   LOGIN = "/login",
 }
