@@ -283,7 +283,7 @@ export const Transactions:React.FC = () => {
               />
             </>}
             <h3 className="text-l font-bold mb-2">Remark</h3>
-            <input
+            <textarea
                 key={"remark"}
                 name={"remark"}
                 placeholder={"Remark"}

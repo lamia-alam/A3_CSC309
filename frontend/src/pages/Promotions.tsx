@@ -198,7 +198,7 @@ export const Promotions:React.FC = () => {
                 onChange={(e) => setForm({...form, name: e.target.value})}
             />
             <h3 className="text-l font-bold mb-2">Description</h3>
-            <input
+            <textarea
                 key={"description"}
                 name={"description"}
                 placeholder={"Description"}
