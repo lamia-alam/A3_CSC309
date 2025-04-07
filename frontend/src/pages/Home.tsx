@@ -115,7 +115,6 @@ export const Home: React.FC = () => {
           <h1 className="text-3xl font-bold text-purple-700">
             Welcome, {userInfo.name || userInfo.utorid}!
           </h1>
-          {/* QR Code Section */}
           <div className="mb-6 text-center">
             <QRCode
               size={156}

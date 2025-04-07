@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 export const ResetPasswordLoggedIn: React.FC = () => {
   const navigate = useNavigate();
-  const { userInfo } = useAuth();  // Check if the user is logged in
+  const { userInfo } = useAuth();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -13,34 +13,32 @@ export const ResetPasswordLoggedIn: React.FC = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // Ensure that the user is logged in
   if (!userInfo) {
-    navigate("/login");  // Redirect to login if not authenticated
+    navigate("/login");
   }
 
   const handlePasswordChange = async () => {
-    // Ensure the new passwords match
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
   
     const requestPayload = {
-      old: currentPassword,  // Rename "currentPassword" to "old"
-      new: newPassword,      // Rename "newPassword" to "new"
+      old: currentPassword,
+      new: newPassword,
     };
   
-    console.log("Sending password update request:", requestPayload);  // Log the request payload
+    console.log("Sending password update request:", requestPayload);
   
     try {
       const response = await api.patch("/users/me/password", requestPayload);
-      console.log("Password update response:", response);  // Log the response
+      console.log("Password update response:", response);
       setSuccess(true);
-      setTimeout(() => navigate("/account"), 3000);  // Redirect to account page after success
+      setTimeout(() => navigate("/"), 3000);
     } catch (err: any) {
-      console.error("Error occurred during password reset:", err);  // Log the error
+      console.error("Error occurred during password reset:", err);
       if (err.response) {
-        console.error("Error response:", err.response);  // Log the detailed response error
+        console.error("Error response:", err.response);
       }
       setError(err.response?.data?.error || "Password update failed.");
     }

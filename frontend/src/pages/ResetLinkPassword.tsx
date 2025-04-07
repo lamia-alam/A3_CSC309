@@ -4,7 +4,7 @@ import { api } from "../config/api";
 
 export const ResetLinkPassword: React.FC = () => {
   const navigate = useNavigate();
-  const { resetToken } = useParams();  // Get the reset token from URL parameters
+  const { resetToken } = useParams();
 
   const [username, setUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -19,17 +19,14 @@ export const ResetLinkPassword: React.FC = () => {
     }
 
     try {
-      // Directly make the POST request without any additional questions
       await api.post(`/auth/resets/${resetToken}`, {
-        utorid: username, // "utorid" as the backend expects
-        password: newPassword, // New password directly
+        utorid: username,
+        password: newPassword,
       });
       
-      // If successful, show success message and redirect after a short delay
       setSuccess(true);
-      setTimeout(() => navigate("/login"), 3000);  // Redirect to login after success
+      setTimeout(() => navigate("/login"), 3000);
     } catch (err: any) {
-      // Handle any errors that might occur
       console.error("Error occurred during password reset:", err);
       setError(err.response?.data?.message || "Password reset failed.");
     }
