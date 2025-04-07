@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { api } from "../config/api";
 
 type User = { id: number; utorid: string; name: string; email: string; role: string; verified: boolean };
-type Promotion = { id: number; title: string; description: string; points: number; startTime: string; endTime: string };
+type Promotion = { id: number; name: string; description: string; points: number; startTime: string; endTime: string };
 type Event = { id: number; name: string; location: string; startTime: string; endTime: string; published: boolean };
 type Transaction = { id: number; type: string; spent?: number; amount: number; createdAt: string };
 
@@ -157,7 +157,7 @@ export const Home: React.FC = () => {
                   { label: "Active", value: activePromos },
                   { label: "Expired", value: expiredPromos },
                   ...upcomingPromos.map(p => ({
-                    label: `Upcoming: ${p.title}`,
+                    label: `Upcoming: ${p.name}`,
                     value: new Date(p.startTime).toLocaleDateString(),
                   })),
                 ]}
