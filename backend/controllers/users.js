@@ -610,11 +610,14 @@ const getTransactions = async (req, res) => {
       include: {
         Promotions: true,
         createdByUser: true,
+        processedByUser: true,
       },
     });
 
+    const totalTrans = await prisma.transaction.count({where: where});
+
     res.status(200).send({
-      count: transactions.length,
+      count: totalTrans,
       results: transactions.map((transaction) => ({
         id: transaction.id,
         createdAt: transaction.createdAt,
@@ -625,6 +628,7 @@ const getTransactions = async (req, res) => {
         promotionIds: transaction.Promotions.map((promotion) => promotion.id),
         remark: transaction.remark ?? "",
         createdBy: transaction.createdByUser.utorid,
+        processedBy: transaction.processedByUser?.utorid,
       })),
     });
   } catch (error) {

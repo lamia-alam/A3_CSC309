@@ -9,6 +9,7 @@ import QRCode from "react-qr-code";
 
 export const Transactions:React.FC = () => {
   const [trans, setTrans] = React.useState([])
+  const [allTrans, setAllTrans] = React.useState([])
   const [page, setPage] = React.useState(1)
   const [id, setId] = React.useState(-1)
   const [maxPage, setMaxPage] = React.useState(1)
@@ -19,7 +20,7 @@ export const Transactions:React.FC = () => {
   const [promotionMap, setPromotionMap] = React.useState(new Map<string, string>())
   const [transToUserMap, setTransToUserMap] = React.useState(new Map<string, string>())
   const [filters, setFilters] = React.useState({} as FiltersState)
-  const [form, setForm] = useState({ type: "", spent: 0, amount: 0, remark: "", relatedId: "", utorid: "", promotionIds: [] as string[] });
+  const [form, setForm] = useState({ type: "", spent: "", amount: "", remark: "", relatedId: "", utorid: "", promotionIds: [] as string[] });
   const allowedTypes = ["redemption", "transfer"]
   if (role !== "regular") {
     allowedTypes.push("purchase")
@@ -37,11 +38,11 @@ export const Transactions:React.FC = () => {
   }
 
   const fetchUsers = async () => {
-    return await api.get("/users")
+    return await api.get("/users", {params: {limit: 1000}})
   }
 
   const fetchPromotions = async () => {
-    return await api.get("/promotions")
+    return await api.get("/promotions", {params: {limit: 1000}} )
   }
 
   const processRequest = (transaction: any) => {
@@ -111,9 +112,16 @@ export const Transactions:React.FC = () => {
     })
   }, []);
 
+
+  useEffect(() => {
+    fetchTransactions({limit: 1000}).then(res => {
+      setAllTrans(res?.data.results)
+    })
+  }, []);
+
   const submitForm = () => {
-    var payload = {} as any
-    var url = ""
+    let payload = {} as any
+    let url = ""
     switch (form.type) {
       case "purchase":
         payload.utorid = form.utorid;
@@ -147,7 +155,7 @@ export const Transactions:React.FC = () => {
     }
     api.post(url, payload).then(() => {
         alert("Transaction created successfully.");
-        setForm({ type: "", spent: 0, amount: 0, remark: "", relatedId: "", utorid: "", promotionIds: [] as string[] })
+        setForm({ type: "", spent: "", amount: "", remark: "", relatedId: "", utorid: "", promotionIds: [] as string[] })
         getTransactions()
         const checkbox = document.getElementById(
             "my-drawer"
@@ -164,7 +172,7 @@ export const Transactions:React.FC = () => {
         <div className="drawer-content">
           <div className="flex justify-between items-center mb-3">
             <h1 className="text-2xl font-semibold">Transactions</h1>
-            <label htmlFor="my-drawer" className="btn btn-primary">
+            <label htmlFor="my-drawer" className="btn btn-primary hover:btn-secondary">
               Create Transaction
             </label>
           </div>
@@ -186,19 +194,34 @@ export const Transactions:React.FC = () => {
                             </h2>
                             <div className="divider m-1"></div>
                             <div className={"flex flex-col"}>
-                              <p>Notes: {transaction['remark']}</p>
-                              <p>Created by: {userMap.get(transaction['createdBy'])}</p>
-                              <p>Customer: {userMap.get(transaction['utorid'])}</p>
-                              <p>Points Awarded: {transaction['amount']}</p>
-                              <p>Points Spent: {transaction['spent'] ?? 0}</p>
-                              {[...transaction["promotionIds"]]?.length !== 0 ? <p>Promotions Applied:</p> : <br></br>}
-                              {[...transaction["promotionIds"]]?.length !== 0 ? [...transaction["promotionIds"]].map(key =>
+                              <p><b>Notes:</b> {transaction['remark']}</p>
+                              <p><b>Created by:</b> {userMap.get(transaction['createdBy'])}</p>
+                              <p><b>Customer:</b> {userMap.get(transaction['utorid'])}</p>
+                              <p><b>Points Awarded:</b> {transaction['amount']}</p>
+                              <p><b>Points Spent:</b> {transaction['spent'] ?? 0}</p>
+                              {[...transaction["promotionIds"]]?.length !== 0 ? <p><b>Promotions Applied:</b></p> : <br></br>}
+                              <div className={"flex gap-1"}>
+
+
+                              {[...transaction["promotionIds"]]?.length !== 0 ?
+                                  [...transaction["promotionIds"]]?.length < 4 ?
+                                  [...transaction["promotionIds"]].map(key =>
                                       <span className="badge badge-xs badge-secondary">{promotionMap.get(key)}</span>) :
+                                      <>
+                                      {[...transaction["promotionIds"]].slice(0, 3).map(key =>
+                                          <span
+                                              className="badge badge-xs badge-secondary">{promotionMap.get(key)}</span>)}
+                                        <div className="badge badge-xs bg-gray-100 tooltip tooltip-bottom tooltip-secondary" data-tip={[...transaction["promotionIds"]].slice(3, [...transaction["promotionIds"]].length).map(key => promotionMap.get(key)).toString().replace(",",", ")}>
+                                          <a className="link link-secondary">{`+ ${[...transaction["promotionIds"]].length - 3} more`}</a>
+                                        </div>
+                                      </>
+                                  :
                                   <br></br>}
+                              </div>
                               {transaction['type'] === "redemption" ? transaction['processedBy'] == null ?
-                                      <a className={"link link-primary"}
-                                         onClick={() => processRequest(transaction)}>{role !== "regular" ? "Process Redemption" : "View QR Code"}</a> :
-                                      <p>Processed By: {userMap.get(transaction['processedBy'])}</p> :
+                                      <a className={"link link-primary hover:link-secondary"}
+                                         onClick={() => processRequest(transaction)}><b>{role !== "regular" ? "Process Redemption" : "View QR Code"}</b></a> :
+                                      <p><b>Processed By:</b> {userMap.get(transaction['processedBy'])}</p> :
                                   <br></br>}
                             </div>
                           </div>
@@ -234,7 +257,7 @@ export const Transactions:React.FC = () => {
                   </option>
               ))}
               <option key={""} value={""}>
-                {"None"}
+                {"Type"}
               </option>
             </select>
             {form.type === "purchase" && <>
@@ -242,10 +265,11 @@ export const Transactions:React.FC = () => {
               <input
                   key={"spent"}
                   name={"spent"}
+                  placeholder={"Spent"}
                   type={"number"}
                   className="input input-bordered mb-2 w-full"
                   value={(form as any).spent}
-                  onChange={(e) => setForm({...form, spent: Number(e.target.value)})}
+                  onChange={(e) => setForm({...form, spent: e.target.value})}
               />
             </>}
             {["adjustment", "redemption", "transfer"].includes(form.type) && <>
@@ -254,13 +278,14 @@ export const Transactions:React.FC = () => {
                   key={"amount"}
                   name={"amount"}
                   type={"number"}
+                  placeholder={"Amount"}
                   className="input input-bordered mb-2 w-full"
                   value={(form as any).amount}
-                  onChange={(e) => setForm({...form, amount: Number(e.target.value)})}
+                  onChange={(e) => setForm({...form, amount: e.target.value})}
               />
             </>}
             <h3 className="text-l font-bold mb-2">Remark</h3>
-            <input
+            <textarea
                 key={"remark"}
                 name={"remark"}
                 placeholder={"Remark"}
@@ -279,13 +304,13 @@ export const Transactions:React.FC = () => {
                     utorid: transToUserMap.get(e.target.value) ?? ""
                   })}
               >
-                {trans.map((transaction) => (
+                {allTrans.map((transaction) => (
                     <option key={transaction['id']} value={transaction['id']}>
                       {`Transaction ${transaction['id']}`}
                     </option>
                 ))}
                 <option key={""} value={""}>
-                  {"None"}
+                  {"Related ID"}
                 </option>
               </select>
             </>}
@@ -310,7 +335,7 @@ export const Transactions:React.FC = () => {
                     </option>
                 ))}
                 <option key={""} value={""}>
-                  {"None"}
+                  {"Customer"}
                 </option>
               </select>
             </>}
@@ -324,7 +349,7 @@ export const Transactions:React.FC = () => {
                   placeholder="Promotions"
               />
             </>}
-            <button className={"btn btn-primary mt-4"} onClick={submitForm}/>
+            <button className={"btn btn-primary hover:btn-secondary mt-4"} onClick={submitForm}>Submit</button>
           </div>
         </div>
         <dialog id="my_modal_2" className="modal">
