@@ -9,6 +9,7 @@ import QRCode from "react-qr-code";
 
 export const Transactions:React.FC = () => {
   const [trans, setTrans] = React.useState([])
+  const [allTrans, setAllTrans] = React.useState([])
   const [page, setPage] = React.useState(1)
   const [id, setId] = React.useState(-1)
   const [maxPage, setMaxPage] = React.useState(1)
@@ -108,6 +109,13 @@ export const Transactions:React.FC = () => {
         map.set(promotion.id, promotion.name)
       })
       setPromotionMap(map)
+    })
+  }, []);
+
+
+  useEffect(() => {
+    fetchTransactions({limit: 1000}).then(res => {
+      setAllTrans(res?.data.results)
     })
   }, []);
 
@@ -294,7 +302,7 @@ export const Transactions:React.FC = () => {
                     utorid: transToUserMap.get(e.target.value) ?? ""
                   })}
               >
-                {trans.map((transaction) => (
+                {allTrans.map((transaction) => (
                     <option key={transaction['id']} value={transaction['id']}>
                       {`Transaction ${transaction['id']}`}
                     </option>
