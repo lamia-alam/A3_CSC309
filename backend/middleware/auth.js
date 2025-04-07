@@ -23,7 +23,7 @@ const authentication = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    console.log("🚀 ~ authentication ~ error:", error, "path: ", req.originalUrl, "method: ", req.method);
+    console.log("~ authentication ~ error:", error, "path: ", req.originalUrl, "method: ", req.method);
     if (error.name === "TokenExpiredError") {
       return res
         .status(401)
