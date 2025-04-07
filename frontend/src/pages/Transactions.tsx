@@ -194,12 +194,12 @@ export const Transactions:React.FC = () => {
                             </h2>
                             <div className="divider m-1"></div>
                             <div className={"flex flex-col"}>
-                              <p>Notes: {transaction['remark']}</p>
-                              <p>Created by: {userMap.get(transaction['createdBy'])}</p>
-                              <p>Customer: {userMap.get(transaction['utorid'])}</p>
-                              <p>Points Awarded: {transaction['amount']}</p>
-                              <p>Points Spent: {transaction['spent'] ?? 0}</p>
-                              {[...transaction["promotionIds"]]?.length !== 0 ? <p>Promotions Applied:</p> : <br></br>}
+                              <p><b>Notes:</b> {transaction['remark']}</p>
+                              <p><b>Created by:</b> {userMap.get(transaction['createdBy'])}</p>
+                              <p><b>Customer:</b> {userMap.get(transaction['utorid'])}</p>
+                              <p><b>Points Awarded:</b> {transaction['amount']}</p>
+                              <p><b>Points Spent:</b> {transaction['spent'] ?? 0}</p>
+                              {[...transaction["promotionIds"]]?.length !== 0 ? <p><b>Promotions Applied:</b></p> : <br></br>}
                               <div className={"flex gap-1"}>
 
 
@@ -220,8 +220,8 @@ export const Transactions:React.FC = () => {
                               </div>
                               {transaction['type'] === "redemption" ? transaction['processedBy'] == null ?
                                       <a className={"link link-primary hover:link-secondary"}
-                                         onClick={() => processRequest(transaction)}>{role !== "regular" ? "Process Redemption" : "View QR Code"}</a> :
-                                      <p>Processed By: {userMap.get(transaction['processedBy'])}</p> :
+                                         onClick={() => processRequest(transaction)}><b>{role !== "regular" ? "Process Redemption" : "View QR Code"}</b></a> :
+                                      <p><b>Processed By:</b> {userMap.get(transaction['processedBy'])}</p> :
                                   <br></br>}
                             </div>
                           </div>
