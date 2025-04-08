@@ -29,9 +29,6 @@ export const EditEventDrawer: React.FC<{
     points: 0,
   });
 
-  
-
-  
 
   const handleClose = () => {
     modalCheckboxRef.current!.checked = false;

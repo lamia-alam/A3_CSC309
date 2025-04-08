@@ -225,6 +225,18 @@ const getEvents = async (req, res) => {
       where.published = true;
     }
 
+    // if (showFull === "false") {
+    //   where.capacity = {
+    //     gte: prisma.eventGuests.count({
+    //       where: {
+    //         eventId: {
+    //           equals: prisma.event.id,
+    //         },
+    //       },
+    //     }),
+    //   };
+    // }
+
     const pageInt = parseInt(page, 10);
     const limitInt = parseInt(limit, 10);
 
@@ -247,8 +259,26 @@ const getEvents = async (req, res) => {
             guest: true,
           },
         },
+        EventOrganizer: {
+          include: {
+            organizer: true,
+          },
+        },
       },
     });
+
+    const events = totalEvents.filter((event) => {
+      if (showFull && showFull === "false") {
+        return (
+          event.capacity === null ||
+          event.capacity > event.EventGuests.length
+        );
+      }
+      return true;
+    }).slice(
+      (pageInt - 1) * limitInt,
+      pageInt * limitInt
+    );
 
     const totalPublishedEvents = await prisma.event.findMany({
       where: {
@@ -267,7 +297,8 @@ const getEvents = async (req, res) => {
     console.log("🚀 ~ getEvents ~ totalEvents: count", totalEvents.length);
     console.log("🚀 ~ getEvents ~ totalEvents:", totalEvents);
 
-    const eventCount = totalEvents.filter((event) => {
+    const eventCount = totalEvents
+    .filter((event) => {
       if (showFull && showFull === "false") {
         return (
           event.capacity === null || event.capacity > event.EventGuests.length
@@ -286,37 +317,38 @@ const getEvents = async (req, res) => {
     }).length;
     console.log("🚀 ~ getEvents ~ eventCount:", eventCount);
 
-    const events = await prisma.event.findMany({
-      where,
-      skip: (pageInt - 1) * limitInt,
-      take: limitInt,
-      include: {
-        EventGuests: {
-          include: {
-            guest: true,
-          },
-        },
-        EventOrganizer: {
-          include: {
-            organizer: true,
-          },
-        },
-      },
-    });
+    // const events = await prisma.event.findMany({
+    //   where,
+    //   skip: (pageInt - 1) * limitInt,
+    //   take: limitInt,
+    //   include: {
+    //     EventGuests: {
+    //       include: {
+    //         guest: true,
+    //       },
+    //     },
+    //     EventOrganizer: {
+    //       include: {
+    //         organizer: true,
+    //       },
+    //     },
+    //   },
+    // });
+    // console.log("🚀 ~ getEvents ~ events:", events);
 
     return res.status(200).json({
       count: eventCount,
       publishedCount: publishedEventCount,
       results: events
-        .filter((event) => {
-          if (showFull && showFull === "false") {
-            return (
-              event.capacity === null ||
-              event.capacity > event.EventGuests.length
-            );
-          }
-          return true;
-        })
+        // .filter((event) => {
+        //   if (showFull && showFull === "false") {
+        //     return (
+        //       event.capacity === null ||
+        //       event.capacity > event.EventGuests.length
+        //     );
+        //   }
+        //   return true;
+        // })
         .map((event) => ({
           id: event.id,
           name: event.name,
@@ -514,8 +546,26 @@ const getMyEvents = async (req, res) => {
             guest: true,
           },
         },
+        EventOrganizer: {
+          include: {
+            organizer: true,
+          },
+        },
       },
     });
+
+    const events = totalEvents.filter((event) => {
+      if (showFull && showFull === "false") {
+        return (
+          event.capacity === null ||
+          event.capacity > event.EventGuests.length
+        );
+      }
+      return true;
+      }).slice(
+        (pageInt - 1) * limitInt,
+        pageInt * limitInt
+      );
 
     const eventCount = totalEvents.filter((event) => {
       if (showFull && showFull === "false") {
@@ -527,36 +577,36 @@ const getMyEvents = async (req, res) => {
     }).length;
     console.log("🚀 ~ getEvents ~ eventCount:", eventCount);
 
-    const events = await prisma.event.findMany({
-      where,
-      skip: (pageInt - 1) * limitInt,
-      take: limitInt,
-      include: {
-        EventGuests: {
-          include: {
-            guest: true,
-          },
-        },
-        EventOrganizer: {
-          include: {
-            organizer: true,
-          },
-        },
-      },
-    });
+    // const events = await prisma.event.findMany({
+    //   where,
+    //   skip: (pageInt - 1) * limitInt,
+    //   take: limitInt,
+    //   include: {
+    //     EventGuests: {
+    //       include: {
+    //         guest: true,
+    //       },
+    //     },
+    //     EventOrganizer: {
+    //       include: {
+    //         organizer: true,
+    //       },
+    //     },
+    //   },
+    // });
 
     return res.status(200).json({
       count: eventCount,
       results: events
-        .filter((event) => {
-          if (showFull && showFull === "false") {
-            return (
-              event.capacity === null ||
-              event.capacity > event.EventGuests.length
-            );
-          }
-          return true;
-        })
+        // .filter((event) => {
+        //   if (showFull && showFull === "false") {
+        //     return (
+        //       event.capacity === null ||
+        //       event.capacity > event.EventGuests.length
+        //     );
+        //   }
+        //   return true;
+        // })
         .map((event) => ({
           id: event.id,
           name: event.name,
