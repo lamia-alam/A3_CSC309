@@ -3,18 +3,11 @@ import { useNotification } from "../../context/NotificationContext";
 import { api } from "../../config/api";
 import { EventForm } from "./EventForm";
 import { useEvent } from "../../context/EventContext";
-const formatDateTimeAsISO = (date: Date) => {
-  const padToTwoDigits = (num: number) => String(num).padStart(2, "0");
-  return `${date.getFullYear()}-${padToTwoDigits(
-    date.getMonth() + 1
-  )}-${padToTwoDigits(date.getDate())}T${padToTwoDigits(
-    date.getHours()
-  )}:${padToTwoDigits(date.getMinutes())}`;
-};
+
 
 export const EditEventDrawer: React.FC<{
 }> = () => {
-  const {selectEventId, setSelectEventId} = useEvent()
+  const {selectEventId} = useEvent()
   const modalCheckboxRef = useRef<HTMLInputElement>(null);
   const { createNotification } = useNotification();
 
@@ -36,34 +29,9 @@ export const EditEventDrawer: React.FC<{
     points: 0,
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "capacity" || name === "points"
-          ? Number(value)
-          : name === "startTime" || name === "endTime"
-          ? new Date(value)
-          : value,
-    }));
-  };
+  
 
-  const formValidation = () => {
-    const { name, location, startTime, endTime, description, points } =
-      formData;
-    return (
-      name &&
-      location &&
-      startTime &&
-      endTime &&
-      description &&
-      startTime < endTime &&
-      points > 0
-    );
-  };
+  
 
   const handleClose = () => {
     modalCheckboxRef.current!.checked = false;
@@ -90,9 +58,7 @@ export const EditEventDrawer: React.FC<{
     }
   };
 
-  const handleOpen = () => {
-    modalCheckboxRef.current!.checked = true;
-  };
+  
 
   useEffect(() => {
     if (!selectEventId) return;

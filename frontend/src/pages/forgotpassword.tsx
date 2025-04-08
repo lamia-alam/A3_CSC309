@@ -7,7 +7,7 @@ export const ForgotPassword: React.FC = () => {
 
   const handleReset = async () => {
     try {
-      const res = await api.post("/auth/resets", { utorid });
+      await api.post("/auth/resets", { utorid });
       setMessage("Password reset link sent! Check your email.");
     } catch (err) {
       setMessage("Error: Could not send reset link.");

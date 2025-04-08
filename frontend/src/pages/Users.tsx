@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { api } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 import { CreateUserDrawer } from "../components/CreateUserDrawer";
-import { debounce } from 'lodash';
 
 export type User = {
   id: number;
@@ -15,10 +14,10 @@ export type User = {
 };
 
 export const Users: React.FC = () => {
-  const { userInfo, role } = useAuth();
+  const { role } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
-  const [form, setForm] = useState({ name: "", utorid: "", email: "", role: "regular" });
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  
+  const [successMessage] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{
     key: keyof User;
     direction: "ascending" | "descending";
@@ -42,18 +41,7 @@ export const Users: React.FC = () => {
   const isManager = role === "manager";
   const isCashier = role === "cashier";
 
-  const allowedRoles = isSuperuser
-    ? ["superuser", "manager", "cashier", "regular"]
-    : isManager
-    ? ["cashier", "regular"]
-    : ["regular"];
-
-  const debouncedSetFilters = debounce((column: keyof typeof filters, value: string) => {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        [column]: value,
-      }));
-    }, 300);
+  
     
 
   const fetchUsers = async () => {
@@ -107,41 +95,7 @@ export const Users: React.FC = () => {
   
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
   
-  const handleCreate = async () => {
-    const { name, utorid, email, role } = form;
-
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@mail\.utoronto\.ca$/;
-    if (!emailRegex.test(email)) {
-      alert("Email must be a @mail.utoronto.ca address.");
-      return;
-    }
-    if (utorid.length !== 8) {
-      alert("UTORid must be exactly 8 characters.");
-      return;
-    }
-    if (name.trim().length === 0 || name.length > 50) {
-      alert("Name must be between 1 and 50 characters.");
-      return;
-    }
-
-    try {
-      await api.post("/users", { name, utorid, email, role });
-      setForm({ name: "", utorid: "", email: "", role: "regular" });
-      setSuccessMessage("User created");
-
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
-
-      if (isSuperuser || isManager) {
-        fetchUsers();
-      }
-    } catch (err: any) {
-      const message =
-        err?.response?.data?.error || "An error occurred while creating the user.";
-      alert("Error creating user: " + message);
-    }
-  };
+  
 
   const handleVerify = async (id: number, value: boolean) => {
     try {

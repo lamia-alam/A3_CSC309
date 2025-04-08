@@ -1,10 +1,10 @@
 import React from "react";
 import type { ICellRendererParams } from "ag-grid-community";
-import { EventType } from "../../../pages/Events";
 import { AxiosError } from "axios";
 import { api } from "../../../config/api";
 import { useNotification } from "../../../context/NotificationContext";
 import { useEvent } from "../../../context/EventContext";
+import { EventType } from "../EventTable";
 
 export const RSVPEvent: React.FC<{
   params: ICellRendererParams<EventType>;
