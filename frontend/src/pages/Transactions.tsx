@@ -126,27 +126,27 @@ export const Transactions:React.FC = () => {
       case "purchase":
         payload.utorid = form.utorid;
         payload.type = form.type;
-        payload.spent = form.spent;
+        payload.spent = Number(form.spent);
         payload.promotionIds = form.promotionIds;
         payload.remark = form.remark;
         url = "/transactions"
         break
       case "redemption":
         payload.type = form.type;
-        payload.amount = form.amount;
+        payload.amount = Number(form.amount);
         payload.remark = form.remark;
         url = "/users/me/transactions"
         break
       case "transfer":
         payload.type = form.type;
-        payload.amount = form.amount;
+        payload.amount = Number(form.amount);
         payload.remark = form.remark;
         url = `/users/${recipient}/transactions`
         break
       case "adjustment":
         payload.utorid = form.utorid;
         payload.type = form.type;
-        payload.amount = form.amount;
+        payload.amount = Number(form.amount);
         payload.relatedId = form.relatedId;
         payload.promotionIds = form.promotionIds;
         payload.remark = form.remark;
