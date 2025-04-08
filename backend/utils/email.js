@@ -4,7 +4,7 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "shreyasetlur18@gmail.com",
-    pass: "uzpqlaqbdtjfklms", // this is your Gmail app password
+    pass: "uzpqlaqbdtjfklms",
   },
 });
 
@@ -24,9 +24,9 @@ const sendResetEmail = async (recipientEmail, resetToken) => {
         `,
       });
   
-      console.log("✅ Email sent:", info.response);
+      console.log("Email sent:", info.response);
     } catch (error) {
-      console.error("❌ Failed to send email:", error);
+      console.error("Failed to send email:", error);
     }
   };  
 
