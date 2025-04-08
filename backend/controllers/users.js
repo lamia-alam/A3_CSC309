@@ -294,7 +294,6 @@ const updateUserById = async (req, res) => {
   const { userId } = req.params;
   let { email, verified, suspicious, role } = req.body;
 
-  // 🔧 Handle boolean values safely
   if (verified === "true") verified = true;
   if (verified === "false") verified = false;
   if (suspicious === "true") suspicious = true;
@@ -333,7 +332,7 @@ const updateUserById = async (req, res) => {
     return res.status(400).send({ error: "Invalid suspicious value" });
   }
 
-  // ✂️ Removed: you can now unverify users
+  // Removed: you can now unverify users
   // if (verified === false) { ... }
 
   if (role && !Object.values(Role).includes(role)) {
