@@ -20,6 +20,7 @@
     "react-qr-code": "^2.0.15",
     "react-router-dom": "^7.4.1",
     "react-select": "^5.10.1",
+    "nodemailer": "^6.10.0",
     "tailwindcss": "^4.1.0"
   },
   "devDependencies": {
