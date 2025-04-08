@@ -1,0 +1,245 @@
+
+Shreya:
+
+Lodash
+
+In our package.json. I can be installed by running npm install (or can be separately installed by running npm install lodash).
+
+We used it in the Users component, to apply the debounce function to optimize filter updates. This technique ensures that filter changes are only applied after the user stops typing for 300 milliseconds, preventing excessive re-renders and improving performance.
+
+Nodemailer
+
+In our package.json, Nodemailer can be installed by running npm install (or separately by running npm install nodemailer).
+
+We use Nodemailer to handle sending password reset emails. It allows us to easily configure an email transporter (in this case, using Gmail) and send HTML-based emails to users. In the sendResetEmail function, Nodemailer is used to send a password reset email containing a link with a unique reset token. This link expires after one hour, ensuring secure password recovery. Nodemailer simplifies the email sending process, ensuring reliable communication for actions like password resets.
+
+The following code snippet from email.js was adapted with assistance from ChatGPT:
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "shreyasetlur18@gmail.com",
+    pass: "uzpqlaqbdtjfklms",
+  },
+});
+
+The following code snippets from users.tsx was adapted with assistance from ChatGPT:
+
+  const debouncedSetFilters = debounce((column: keyof typeof filters, value: string) => {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        [column]: value,
+      }));
+    }, 300);
+
+                   <div className="flex flex-col items-center">
+                      <span onClick={() => handleSort(column as keyof User)}>
+                        {column.charAt(0).toUpperCase() + column.slice(1)}{" "}
+                        {sortConfig.key === column && (sortConfig.direction === "ascending" ? "↑" : "↓")}
+                      </span>
+                      {column === "verified" || column === "suspicious" ? (
+                        <select
+                          className="select select-sm w-32 mt-1"
+                          value={filters[column as keyof typeof filters]}
+                          onChange={(e) => setFilters({ ...filters, [column]: e.target.value })}
+                        >
+                          <option value="">All</option>
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          className="input input-sm w-32 mt-1"
+                          placeholder={`Filter ${column}`}
+                          value={filters[column as keyof typeof filters]}
+                          onChange={(e) => setFilters({ ...filters, [column]: e.target.value })}
+                        />
+                      )}
+                    </div>
+
+
+
+
+Faatima: 
+
+React-Select
+
+In our package.json so npm install will install it (or can separately install by doing npm install react-select)
+
+React-Select is the Select Control for React that provides Select components with higher usability. Originally, I was using the default html select component for multi select of promotion IDs in the transaction creation drawer. However, to select them, the user would have to ctrl+click, which is not very easy or intuitive. As a result, I used the Select component from React-Select instead for the promotion IDs. 
+
+React-QR-Code
+
+In our package.json so npm install will install it (or can separately install by doing npm install react-qr-code).
+
+React QR Code is a library that provides a QR Code component that can display a QR code for a given value. We used this library to display the QR codes specified in the requirements.
+ChatGPT assistance
+
+I couldn’t conceptualize how to make a filters component for a grid of transaction tiles, so I used ChatGPT for assistance. 
+
+Here is the code that it provided that I further customized and integrated it with the Transactions page.
+
+import { useState } from "react";
+
+type FiltersProps = {
+  onFilterChange: (filters: FiltersState) => void;
+};
+
+type FiltersState = {
+  name: string;
+  createdBy: string;
+  suspicious: string;
+  promotionId: string;
+  type: string;
+  relatedId: string;
+  amount: string;
+  operator: string;
+  page: number;
+  limit: number;
+};
+
+const Filters: React.FC<FiltersProps> = ({ onFilterChange }) => {
+  const [filters, setFilters] = useState<FiltersState>({
+    name: "",
+    createdBy: "",
+    suspicious: "",
+    promotionId: "",
+    type: "",
+    relatedId: "",
+    amount: "",
+    operator: "gte",
+    page: 1,
+    limit: 10,
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  return (
+    <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+      <h2 className="text-lg font-semibold mb-4">Filters</h2>
+      <div className="grid grid-cols-2 gap-4">
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={filters.name}
+          onChange={handleChange}
+          className="p-2 border rounded w-full"
+        />
+        <input
+          type="text"
+          name="createdBy"
+          placeholder="Created By"
+          value={filters.createdBy}
+          onChange={handleChange}
+          className="p-2 border rounded w-full"
+        />
+        <select
+          name="suspicious"
+          value={filters.suspicious}
+          onChange={handleChange}
+          className="p-2 border rounded w-full"
+        >
+          <option value="">Suspicious</option>
+          <option value="true">True</option>
+          <option value="false">False</option>
+        </select>
+        <input
+          type="number"
+          name="promotionId"
+          placeholder="Promotion ID"
+          value={filters.promotionId}
+          onChange={handleChange}
+          className="p-2 border rounded w-full"
+        />
+        <input
+          type="text"
+          name="type"
+          placeholder="Type"
+          value={filters.type}
+          onChange={handleChange}
+          className="p-2 border rounded w-full"
+        />
+        <input
+          type="number"
+          name="relatedId"
+          placeholder="Related ID"
+          value={filters.relatedId}
+          onChange={handleChange}
+          className="p-2 border rounded w-full"
+        />
+        <input
+          type="number"
+          name="amount"
+          placeholder="Amount"
+          value={filters.amount}
+          onChange={handleChange}
+          className="p-2 border rounded w-full"
+        />
+        <select
+          name="operator"
+          value={filters.operator}
+          onChange={handleChange}
+          className="p-2 border rounded w-full"
+        >
+          <option value="gte">Greater than or equal</option>
+          <option value="lte">Less than or equal</option>
+        </select>
+        <input
+          type="number"
+          name="page"
+          placeholder="Page"
+          value={filters.page}
+          onChange={handleChange}
+          className="p-2 border rounded w-full"
+        />
+        <input
+          type="number"
+          name="limit"
+          placeholder="Limit"
+          value={filters.limit}
+          onChange={handleChange}
+          className="p-2 border rounded w-full"
+        />
+      </div>
+      <button
+        onClick={() => onFilterChange(filters)}
+        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded w-full hover:bg-blue-600"
+      >
+        Apply Filters
+      </button>
+    </div>
+  );
+};
+
+export default Filters;
+
+
+
+Lamia:
+
+
+DaisyUI
+
+In our package.json so npm install will install it (or can separately install by doing npm install daisyui) 
+
+DaisyUI is a plugin for Tailwind CSS that provides a set of pre-built, customizable UI components. It simplifies styling in Tailwind-based projects by giving users “component classes” for buttons, alerts, cards, forms, navbars, and more, rather than forcing us to construct everything from lower-level utility classes.
+
+Example Usage → For awarding points in the AwardPointsEvent.tsx file we used a modal and on daisyUI I copied one of the modals from this link https://daisyui.com/components/modal/?lang=en 
+
+Then I customized it to fit the needs of our website 
+
+
+AG Grid
+
+In our package.json so npm install will install it (or can separately install by doing npm install ag-grid-react ag-grid-community)
+
+AG Grid is a fully customizable data grid library that can be used in frameworks like React, Angular, Vue, or Vanilla JavaScript. It’s well-known for handling large data sets and providing a wide range of advanced features out of the box (sorting, filtering, grouping, pagination, editing, etc.). So for the events table the order-by was built in because of using AG Grid 
+
