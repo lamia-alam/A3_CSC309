@@ -25,10 +25,10 @@ type AuthContextType = {
   logout: () => void;
   userInfo: UserInfo | null;
   refreshUserInfo: () => Promise<void>;
-  viewAsRole: string | null;
-  setViewAsRole: (role: string | null) => void;
+  viewAsRole: UserInfo['role'] | null;
+  setViewAsRole: (role: UserInfo['role'] | null) => void;
   loading: boolean;
-  role: string | null;
+  role: UserInfo["role"] | null;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -46,7 +46,7 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [viewAsRole, setViewAsRole] = useState<string | null>(null);
+  const [viewAsRole, setViewAsRole] = useState<UserInfo['role'] | null>(null);
   const [loading, setLoading] = useState(true);
 
   const login = async (utorid: string, password: string) => {
@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     }
   }, [isAuthenticated]);
 
-  const computedRole = viewAsRole ?? userInfo?.role ?? null;
+  const computedRole: UserInfo['role'] | null = viewAsRole ?? userInfo?.role ?? null;
 
   return (
     <AuthContext.Provider

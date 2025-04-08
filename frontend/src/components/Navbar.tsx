@@ -1,7 +1,7 @@
 import React from "react";
 import { Pages } from "../constants/pages";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, UserInfo } from "../context/AuthContext";
 
 const Menu = () => {
   const { isAuthenticated, userInfo, viewAsRole } = useAuth();
@@ -26,7 +26,7 @@ const Menu = () => {
   );
 };
 
-const getAvailableRoles = (role: string): string[] => {
+const getAvailableRoles = (role: string): UserInfo['role'][] => {
   if (role === "superuser") return ["manager", "cashier", "regular"];
   if (role === "manager") return ["cashier", "regular"];
   if (role === "cashier") return ["regular"];
@@ -34,7 +34,7 @@ const getAvailableRoles = (role: string): string[] => {
 };
 
 export const Navbar: React.FC = () => {
-  const { isAuthenticated, logout, userInfo, viewAsRole, setViewAsRole, role } = useAuth();
+  const { isAuthenticated, logout, userInfo, viewAsRole, setViewAsRole } = useAuth();
 
   const actualRole = userInfo?.role;
   const availableRoles = actualRole ? getAvailableRoles(actualRole) : [];

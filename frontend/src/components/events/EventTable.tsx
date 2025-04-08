@@ -25,7 +25,7 @@ export type EventType = {
 };
 
 export const EventTable: React.FC = () => {
-  const { userInfo } = useAuth();
+  const { role } = useAuth();
   const {
     events,
     pageSize,
@@ -33,12 +33,21 @@ export const EventTable: React.FC = () => {
     pageCount,
     handlePageSizeChange,
     handlePageChange,
+    started,
+    ended,
+    published,
+    showFull,
+    setStarted,
+    setEnded,
+    setPublished,
+    setShowFull,
+    filterLocation,
+    filterName,
+    setFilterLocation,
+    setFilterName,
   } = useEvent();
 
-
-  const [colDefs] = useState<ColDef<EventType>[]>(getEventColDefs(userInfo));
-
- 
+  const [colDefs] = useState<ColDef<EventType>[]>(getEventColDefs(role));
 
   const autoSizeStrategy = useMemo<
     | SizeColumnsToFitGridStrategy
@@ -52,6 +61,140 @@ export const EventTable: React.FC = () => {
 
   return (
     <>
+      {/* Filters */}
+      <div className="flex justify-start items-center gap-x-12 gap-y-4 my-4 flex-wrap">
+        <label className="input">
+          <svg
+            className="h-[1em] opacity-50"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <g
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              strokeWidth="2.5"
+              fill="none"
+              stroke="currentColor"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </g>
+          </svg>
+          <input
+            type="search"
+            className="grow"
+            placeholder="Search Name"
+            value={filterName}
+            onChange={(e) => setFilterName(e.target.value)}
+          />
+        </label>
+
+        <label className="input">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            stroke="currentColor"
+            className="h-[1em] opacity-50"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+            />
+          </svg>
+
+          <input
+            type="search"
+            className="grow"
+            placeholder="Search Location"
+            value={filterLocation}
+            onChange={(e) => setFilterLocation(e.target.value)}
+          />
+        </label>
+
+        <label className="fieldset-label">
+          <input
+            type="checkbox"
+            className="checkbox"
+            checked={showFull}
+            onChange={(e) => setShowFull(e.target.checked)}
+          />
+          Show full
+        </label>
+
+        <form className="filter">
+          <input
+            className="btn btn-square"
+            type="reset"
+            value="×"
+            onClick={() => {
+              setStarted(null);
+              setEnded(null);
+            }}
+          />
+          <input
+            className="btn"
+            type="radio"
+            name="status"
+            aria-label="Started"
+            checked={started ?? false}
+            onChange={(e) => {
+              setStarted(e.target.checked);
+              setEnded(null);
+            }}
+          />
+          <input
+            className="btn"
+            type="radio"
+            name="status"
+            aria-label="Ended"
+            checked={ended ?? false}
+            onChange={(e) => {
+              setEnded(e.target.checked);
+              setStarted(null);
+            }}
+          />
+        </form>
+
+        <form className="filter">
+          <input
+            className="btn btn-square"
+            type="reset"
+            value="×"
+            onClick={() => {
+              setPublished(null);
+            }}
+          />
+          <input
+            className="btn"
+            type="radio"
+            name="publish"
+            aria-label="Published"
+            checked={published ?? false}
+            onChange={(e) => {
+              setPublished(e.target.checked);
+            }}
+          />
+          <input
+            className="btn"
+            type="radio"
+            name="publish"
+            aria-label="Unpublished"
+            checked={published === false}
+            onChange={(e) => {
+              setPublished(!e.target.checked);
+            }}
+          />
+        </form>
+      </div>
+
       <div className="w-full h-2/3 mt-4">
         <AgGridReact
           autoSizeStrategy={autoSizeStrategy}
@@ -64,6 +207,8 @@ export const EventTable: React.FC = () => {
           cellSelection={false}
         />
       </div>
+
+      {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
         <div className="flex items-center gap-2 justify-start">
           <div className="join">

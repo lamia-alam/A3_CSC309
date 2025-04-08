@@ -9,19 +9,20 @@ export const defaultColDef: ColDef<EventType> = {
       minWidth: 100,
 } 
 
-export const getEventColDefs = (userInfo: UserInfo | null): ColDef<EventType>[] => [
+export const getEventColDefs = (role: UserInfo['role'] | null): ColDef<EventType>[] => [
     {
       headerName: "Name",
       lockPinned: true,
+      resizable: true,
       pinned: true,
       cellRenderer: (params: ICellRendererParams) => {
         return (
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <Link to={`/events/${params.data.id}`}>
               {params.data.name}
             </Link>
             {params.data.published && (
-              <span className="badge badge-sm badge-success ml-2"></span>
+              <div aria-label="success" className="status status-success"></div>
             )}
           </div>
         );
@@ -57,7 +58,7 @@ export const getEventColDefs = (userInfo: UserInfo | null): ColDef<EventType>[] 
       headerName: "Points remaining",
       field: "pointsRemain",
       minWidth: 100,
-      hide: !userInfo || userInfo?.role === "regular" || userInfo?.role === "cashier",
+      hide: !role || role === "regular" || role === "cashier",
     },
     { field: "capacity", headerName: "Capacity", width: 150 },
     {

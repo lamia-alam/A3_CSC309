@@ -13,17 +13,17 @@ export const EventActionsWrapper: React.FC<
   }>
 > = ({ params }) => {
   
-  const { userInfo } = useAuth();
-  if (!userInfo?.role) {
+  const { role } = useAuth();
+  if (!role) {
     return null;
   }
   return (
     <div className="flex gap-2 items-center p-2">
       <RSVPEvent params={params}  />
-      {userInfo.role === "manager" && (
+      {role === "manager" && (
         <PublishEvent params={params}  />
       )}
-      {["manager", "superuser"].includes(userInfo.role) && (
+      {["manager", "superuser"].includes(role) && (
         <>
         <EditEvent params={params} />  {/* organizer can edit their own events */}
         <DeleteEvent params={params} />

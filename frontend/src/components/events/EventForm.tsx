@@ -17,7 +17,7 @@ export const EventForm: React.FC<{
   eventId?: number | null;
   handleClose: () => void;
 }> = ({ eventId, handleClose }) => {
-  const {userInfo} = useAuth()
+  const { role} = useAuth()
   const {refreshEvents} = useEvent()
   const { createNotification } = useNotification();
 
@@ -49,7 +49,7 @@ export const EventForm: React.FC<{
 
   const hasEventStarted = initialEventData.startTime  && initialEventData.startTime < new Date();
   // const hasEventEnded = initialEventData.endTime && initialEventData.endTime < new Date();
-  const isManager = userInfo && userInfo.role === "manager"
+  const isManager = role === "manager"
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

@@ -186,10 +186,14 @@ const getEvents = async (req, res) => {
 
     let where = {};
     if (name) {
-      where.name = name;
+      where.name = {
+        contains: name,
+      };
     }
     if (location) {
-      where.location = location;
+      where.location = {
+        contains: location,
+      };
     }
 
     const now = new Date();
@@ -245,11 +249,34 @@ const getEvents = async (req, res) => {
         },
       },
     });
+
+    const totalPublishedEvents = await prisma.event.findMany({
+      where: {
+        ...where,
+        published: true,
+      },
+      include: {
+        EventGuests: {
+          include: {
+            guest: true,
+          },
+        },
+      },
+    });
     console.log("🚀 ~ getEvents ~ where:", where);
     console.log("🚀 ~ getEvents ~ totalEvents: count", totalEvents.length);
     console.log("🚀 ~ getEvents ~ totalEvents:", totalEvents);
 
     const eventCount = totalEvents.filter((event) => {
+      if (showFull && showFull === "false") {
+        return (
+          event.capacity === null || event.capacity > event.EventGuests.length
+        );
+      }
+      return true;
+    }).length;
+
+    const publishedEventCount = totalPublishedEvents.filter((event) => {
       if (showFull && showFull === "false") {
         return (
           event.capacity === null || event.capacity > event.EventGuests.length
@@ -279,6 +306,7 @@ const getEvents = async (req, res) => {
 
     return res.status(200).json({
       count: eventCount,
+      publishedCount: publishedEventCount,
       results: events
         .filter((event) => {
           if (showFull && showFull === "false") {
@@ -326,9 +354,11 @@ const getMyEvents = async (req, res) => {
       limit = 10,
     } = req.query;
 
-    const isOrganizerOrManagerOrSuperuser = ['EventOrganizer', Role.manager, Role.superuser].includes(
-      req.user.role
-    );
+    const isOrganizerOrManagerOrSuperuser = [
+      "EventOrganizer",
+      Role.manager,
+      Role.superuser,
+    ].includes(req.user.role);
 
     const validBooleanValues = ["true", "false"];
 
@@ -385,7 +415,10 @@ const getMyEvents = async (req, res) => {
         .json({ error: "Invalid value for published. Use 'true' or 'false'." });
     }
 
-    if (published && !['EventOrganizer', Role.manager, Role.superuser].includes(req.user.role)) {
+    if (
+      published &&
+      !["EventOrganizer", Role.manager, Role.superuser].includes(req.user.role)
+    ) {
       console.log(
         "getEvents",
         403,
@@ -414,10 +447,14 @@ const getMyEvents = async (req, res) => {
 
     let where = {};
     if (name) {
-      where.name = name;
+      where.name = {
+        contains: name,
+      };
     }
     if (location) {
-      where.location = location;
+      where.location = {
+        contains: location,
+      };
     }
 
     const now = new Date();
@@ -450,10 +487,10 @@ const getMyEvents = async (req, res) => {
     }
 
     where.EventOrganizer = {
-        some: {
-          organizerId: req.user.id,
-      }
-    }
+      some: {
+        organizerId: req.user.id,
+      },
+    };
 
     const pageInt = parseInt(page, 10);
     const limitInt = parseInt(limit, 10);
@@ -479,7 +516,6 @@ const getMyEvents = async (req, res) => {
         },
       },
     });
-   
 
     const eventCount = totalEvents.filter((event) => {
       if (showFull && showFull === "false") {
@@ -659,7 +695,8 @@ const updateEvent = async (req, res) => {
 
   const { eventId } = req.params;
 
-  const isManager = req.user.role === Role.manager;
+  const isManagerOrSuperUser =
+    req.user.role === Role.manager || req.user.role === Role.superuser;
 
   try {
     const event = await prisma.event.findUnique({
@@ -770,7 +807,7 @@ const updateEvent = async (req, res) => {
       data.capacity = parseInt(capacity, 10);
     }
 
-    if (!isManager && (points || published)) {
+    if (!isManagerOrSuperUser && (points || published)) {
       return res.status(403).json({
         error:
           "Unauthorized. Only managers can update points or published status.",
@@ -962,7 +999,6 @@ const addEventOrganizer = async (req, res) => {
         },
       },
     });
-    
 
     if (!organizer) {
       return res.status(404).json({ error: "Organizer not found." });

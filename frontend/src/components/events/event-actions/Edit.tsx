@@ -7,9 +7,9 @@ import { EventType } from "../EventTable";
 export const EditEvent: React.FC<{
   params: ICellRendererParams<EventType>;
 }> = ({ params }) => {
-  const { userInfo } = useAuth();
+  const { role } = useAuth();
   const { setSelectEventId } = useEvent()
-  const isManager = userInfo?.role === "manager";
+  const isManager = role === "manager";
   const currentTime = new Date();
 
   if (
