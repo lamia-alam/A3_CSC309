@@ -23,8 +23,8 @@ export const Users: React.FC = () => {
     key: keyof User;
     direction: "ascending" | "descending";
   }>({
-    key: "id", // Default sort key
-    direction: "ascending", // Default sort direction
+    key: "id",
+    direction: "ascending",
   });
   const [filters, setFilters] = useState({
     id: "",
@@ -32,11 +32,11 @@ export const Users: React.FC = () => {
     utorid: "",
     email: "",
     role: "",
-    verified: "", // "" for all, "true" or "false"
-    suspicious: "", // "" for all, "true" or "false"
+    verified: "",
+    suspicious: "",
   });   
   const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage, setUsersPerPage] = useState(5); // Default to 5 users per page
+  const [usersPerPage, setUsersPerPage] = useState(5);
 
   const isSuperuser = role === "superuser";
   const isManager = role === "manager";
@@ -53,7 +53,7 @@ export const Users: React.FC = () => {
         ...prevFilters,
         [column]: value,
       }));
-    }, 300); // Adjust debounce delay (300ms) as needed
+    }, 300);
     
 
   const fetchUsers = async () => {
@@ -91,7 +91,6 @@ export const Users: React.FC = () => {
     );
   });  
   
-  // Sorting after filtering
   const sortedUsers = filteredUsers.sort((a, b) => {
     if (a[sortConfig.key] < b[sortConfig.key]) {
       return sortConfig.direction === "ascending" ? -1 : 1;
@@ -101,8 +100,7 @@ export const Users: React.FC = () => {
     }
     return 0;
   });
-  
-  // Pagination logic
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = sortedUsers.slice(indexOfFirstUser, indexOfLastUser);
@@ -136,7 +134,7 @@ export const Users: React.FC = () => {
       }, 3000);
 
       if (isSuperuser || isManager) {
-        fetchUsers(); // Only refetch list if you're allowed to see it
+        fetchUsers();
       }
     } catch (err: any) {
       const message =
@@ -206,7 +204,6 @@ export const Users: React.FC = () => {
 
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">Users</h1>
-          {/* Conditionally render "Create User" button or "Access Denied" message */}
           {(isSuperuser || isManager || isCashier) ? (
             <label htmlFor="create-user-drawer" className="btn btn-primary">
               Create User
@@ -318,7 +315,6 @@ export const Users: React.FC = () => {
           </div>
         )}
 
-        {/* Pagination controls */}
         {(isSuperuser || isManager) && (
           <div className="flex justify-between items-center mt-4">
             <div className="flex items-center">
@@ -359,7 +355,6 @@ export const Users: React.FC = () => {
 
       </div>
 
-      {/* Drawer content */}
       <CreateUserDrawer onSuccess={fetchUsers} />
     </div>
   );
