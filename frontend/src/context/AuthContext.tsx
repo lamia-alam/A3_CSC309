@@ -21,7 +21,7 @@ export type UserInfo = {
 
 type AuthContextType = {
   isAuthenticated: boolean;
-  login: (utorid: string, password: string) => Promise<void>;
+  login: (utorid: string, password: string) => void;
   logout: () => void;
   userInfo: UserInfo | null;
   refreshUserInfo: () => Promise<void>;
@@ -49,18 +49,19 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [viewAsRole, setViewAsRole] = useState<UserInfo['role'] | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const login = async (utorid: string, password: string) => {
+  const login = (utorid: string, password: string) => {
     setLoading(true);
-    const res = await api.post("/auth/tokens", {
+    api.post("/auth/tokens", {
       utorid,
       password,
-    });
-    if (res.status === 200) {
-      localStorage.setItem("token", res.data.token);
-      setIsAuthenticated(true);
-    } else {
+    }).then(res => {
+      if (res.status === 200) {
+        localStorage.setItem("token", res.data.token);
+        setIsAuthenticated(true);
+      }
+    }).catch(() => {
       alert("Login failed");
-    }
+    });
     setLoading(false);
   };
 
